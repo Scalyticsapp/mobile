@@ -5,12 +5,14 @@ import 'theme/app_theme.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'controllers/dashboard_controller.dart';
+import 'controllers/auth_controller.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id', null);
 
   Get.put(DashboardController(), permanent: true);
+  Get.put(AuthController(), permanent: true); // 🔥 INI
 
   runApp(const ScalpAIApp());
 }

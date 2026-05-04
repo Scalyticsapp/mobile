@@ -182,7 +182,7 @@ class _RegisterViewState extends State<RegisterView> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () =>
-                                c.register(email.text, password.text),
+                                c.register(name.text, email.text, password.text),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.accent,
                               foregroundColor: Colors.black,

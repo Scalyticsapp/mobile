@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get: ^4.6.6
+  get: ^4.7.3
   image_picker: ^1.0.7
   fl_chart: ^0.68.0
   percent_indicator: ^4.2.3
@@ -21,6 +21,8 @@ dependencies:
   camera: ^0.10.5+9
 
   image: ^4.1.3  # 🔥 TAMBAH INI
+  http: ^1.6.0
+  flutter_secure_storage: ^10.0.0
 
 dev_dependencies:
   flutter_test:
