@@ -33,43 +33,8 @@ class _LoginViewState extends State<LoginView> {
       body: Stack(
         children: [
 
-          /// 🔥 BG BLUR ATAS KIRI (SAMA SPLASH)
-          Positioned(
-            top: -80,
-            left: -110,
-            child: Container(
-              width: 360,
-              height: 360,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.accent.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          /// 🔥 BG BLUR BAWAH KANAN (SAMA SPLASH)
-          Positioned(
-            bottom: -40,
-            right: -60,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.accent.withOpacity(0.18),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
+          /// 🔥 BACKGROUND (DI-OPTIMASI TANPA NGUBAH UI)
+          const _BackgroundDecor(),
 
           /// 🔥 CONTENT
           Center(
@@ -78,11 +43,9 @@ class _LoginViewState extends State<LoginView> {
               child: Column(
                 children: [
 
-                  /// LOGO
-                  Image.asset(
-                    'assets/images/logo.png',
-                    width: 100,
-                  ),
+                  /// LOGO (cache biar ringan)
+                  const _Logo(),
+
                   const SizedBox(height: 2),
 
                   /// APP NAME
@@ -168,28 +131,42 @@ class _LoginViewState extends State<LoginView> {
 
                         const SizedBox(height: 24),
 
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () =>
-                                c.login(email.text, password.text),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.accent,
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        /// 🔥 BUTTON + LOADING (FIX LAG UX)
+                        Obx(() => SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: c.isLoading.value
+                                    ? null
+                                    : () => c.login(
+                                          email.text,
+                                          password.text,
+                                        ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.accent,
+                                  foregroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: c.isLoading.value
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.black,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Masuk",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
-                            ),
-                            child: const Text(
-                              "Masuk",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
+                            )),
 
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -217,7 +194,7 @@ class _LoginViewState extends State<LoginView> {
                           width: double.infinity,
                           height: 50,
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => c.loginWithGoogle(),
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
                                 color: AppColors.accent.withOpacity(0.3),
@@ -227,7 +204,6 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             ),
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Image.asset(
@@ -258,6 +234,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
+  /// 🔥 INPUT (TIDAK DIUBAH UI)
   Widget _buildInput({
     required TextEditingController controller,
     required String hint,
@@ -274,8 +251,6 @@ class _LoginViewState extends State<LoginView> {
             ? IconButton(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                focusColor: Colors.transparent,
                 icon: Icon(
                   isPasswordVisible
                       ? Icons.visibility
@@ -292,6 +267,72 @@ class _LoginViewState extends State<LoginView> {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
+    );
+  }
+}
+
+/// 🔥 BACKGROUND DIPISAH + REPAINT OPTIMIZED
+class _BackgroundDecor extends StatelessWidget {
+  const _BackgroundDecor();
+
+  @override
+  Widget build(BuildContext context) {
+    return const RepaintBoundary(
+      child: Stack(
+        children: [
+          Positioned(
+            top: -80,
+            left: -110,
+            child: _CircleDecor(size: 360, opacity: 0.15),
+          ),
+          Positioned(
+            bottom: -40,
+            right: -60,
+            child: _CircleDecor(size: 300, opacity: 0.18),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CircleDecor extends StatelessWidget {
+  final double size;
+  final double opacity;
+
+  const _CircleDecor({
+    required this.size,
+    required this.opacity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            AppColors.accent.withOpacity(opacity),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 🔥 LOGO CACHE BIAR RINGAN
+class _Logo extends StatelessWidget {
+  const _Logo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/logo.png',
+      width: 100,
+      filterQuality: FilterQuality.low, // penting buat performa
     );
   }
 }

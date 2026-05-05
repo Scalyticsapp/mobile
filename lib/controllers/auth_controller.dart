@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
 
@@ -7,10 +10,17 @@ class AuthController extends GetxController {
   final AuthService _authService = AuthService();
   final storage = const FlutterSecureStorage();
 
+  final supabase = Supabase.instance.client;
+
   var user = {}.obs;
   var isLoading = false.obs;
 
-  // 🔐 LOGIN
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: ['email'],
+  serverClientId: '538909060362-imqcte3bcj6so2345q74armnnb56vukg.apps.googleusercontent.com',
+  );
+
+  // 🔐 LOGIN EMAIL
   Future<void> login(String email, String password) async {
     try {
       isLoading.value = true;
@@ -50,7 +60,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // 📝 REGISTER
+  // 📝 REGISTER EMAIL
   Future<void> register(String name, String email, String password) async {
     try {
       isLoading.value = true;
@@ -64,7 +74,7 @@ class AuthController extends GetxController {
           res["user"] != null) {
         
         Get.snackbar("Success", "Register berhasil, silakan login");
-        Get.offAllNamed("/login");
+        Get.offAllNamed(AppRoutes.login);
       } else {
         Get.snackbar(
           "Error",
@@ -78,6 +88,49 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // 🔥 LOGIN GOOGLE (INI YANG TADI KURANG)
+  Future<void> loginWithGoogle() async {
+  try {
+    isLoading.value = true;
+
+    // 🔥 FORCE LOGOUT BIAR POPUP MUNCUL
+    await _googleSignIn.signOut();
+
+    final googleUser = await _googleSignIn.signIn();
+
+    if (googleUser == null) return;
+
+    final googleAuth = await googleUser.authentication;
+
+    final idToken = googleAuth.idToken;
+    final accessToken = googleAuth.accessToken;
+
+    print("ID TOKEN: $idToken");
+
+    if (idToken == null || accessToken == null) {
+      throw Exception("Token Google null");
+    }
+
+    final res = await supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    if (res.session != null) {
+      Get.snackbar("Success", "Login Google berhasil");
+      Get.offAllNamed(AppRoutes.dashboard);
+    } else {
+      Get.snackbar("Error", "Login Google gagal");
+    }
+  } catch (e) {
+    print("GOOGLE LOGIN ERROR: $e");
+    Get.snackbar("Error", "Login Google gagal");
+  } finally {
+    isLoading.value = false;
+  }
+}
 
   // 👤 LOAD USER
   Future<void> loadUser() async {
@@ -100,6 +153,6 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     await storage.delete(key: "token");
     user.value = {};
-    Get.offAllNamed("/login");
+    Get.offAllNamed(AppRoutes.login);
   }
 }
