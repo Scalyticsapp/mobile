@@ -111,67 +111,168 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final bottomInset =
+        MediaQuery.of(context).padding.bottom;
+
     return Container(
-      height: 68,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F0F0F),
-        border: Border(
-          top: BorderSide(color: AppColors.border),
-        ),
+      height: 68 + bottomInset,
+      padding: EdgeInsets.only(
+        bottom: bottomInset,
       ),
+
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+      ),
+
       child: Row(
-        children: List.generate(_items.length, (i) {
-          final isActive = currentIndex == i;
+        children: List.generate(
+          _items.length,
+          (i) {
 
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onTap(i),
-              behavior: HitTestBehavior.opaque,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            final isActive =
+                currentIndex == i;
 
-                  /// ICON (STATIC)
-                  Icon(
-                    _items[i]['icon'] as IconData,
-                    color: isActive
-                        ? AppColors.accent
-                        : AppColors.muted,
-                    size: _items[i]['icon'] == Icons.document_scanner_rounded ? 18 : 22,
-                  ),
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTap(i),
+                behavior:
+                    HitTestBehavior.opaque,
 
-                  const SizedBox(height: 3),
+                child: Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
 
-                  /// TEXT (STATIC)
-                  Text(
-                    _items[i]['label'] as String,
-                    style: AppText.label.copyWith(
+                  children: [
+
+                    Transform.translate(
+                      offset: Offset(
+                        0,
+                        _items[i]['icon'] ==
+                                Icons.document_scanner_rounded
+                            ? 2
+                            : 0,
+                      ),
+
+                      child: Icon(
+                        _items[i]['icon']
+                            as IconData,
+
                       color: isActive
                           ? AppColors.accent
                           : AppColors.muted,
-                      fontSize: 9,
-                    ),
-                  ),
 
-                  const SizedBox(height: 4),
-
-                  /// DOT (STATIC)
-                  Container(
-                    width: 4,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? AppColors.accent
-                          : Colors.transparent,
-                      shape: BoxShape.circle,
+                      size:
+                          _items[i]['icon'] ==
+                                  Icons
+                                      .document_scanner_rounded
+                              ? 18
+                              : 22,
                     ),
-                  ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Transform.translate(
+                      offset: Offset(
+                        0,
+                        _items[i]['label'] == 'Scan'
+                            ? 3
+                            : 0,
+                      ),
+
+                      child: Text(
+                        _items[i]['label']
+                            as String,
+
+                      style:
+                          AppText.label.copyWith(
+                        color: isActive
+                            ? AppColors.accent
+                            : AppColors.muted,
+
+                        fontSize: 9,
+                      ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    AnimatedContainer(
+                      duration:
+                          const Duration(
+                        milliseconds: 180,
+                      ),
+
+                      width: 4,
+                      height: 4,
+
+                      decoration:
+                          BoxDecoration(
+                        color: isActive
+                            ? AppColors.accent
+                            : Colors.transparent,
+
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class BackgroundGlow extends StatelessWidget {
+  const BackgroundGlow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+
+        /// TOP LEFT
+        Positioned(
+          top: -100,
+          left: -120,
+          child: Container(
+            width: 360,
+            height: 360,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.accent.withOpacity(0.16),
+                  Colors.transparent,
                 ],
               ),
             ),
-          );
-        }),
-      ),
+          ),
+        ),
+
+        /// BOTTOM RIGHT
+        Positioned(
+          bottom: -120,
+          right: -80,
+          child: Container(
+            width: 320,
+            height: 320,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.accent.withOpacity(0.10),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

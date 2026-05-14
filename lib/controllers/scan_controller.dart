@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -8,17 +9,16 @@ import 'package:camera/camera.dart';
 class ScanController extends GetxController {
   final _picker = ImagePicker();
 
-  final selectedZone = 'Puncak'.obs;
+  final selectedZone = 'Scalp'.obs;
   final isFlashOn = false.obs;
   final isMacroMode = false.obs;
-  final isCapturing = false.obs; // 🔥 loading state saat capture
+  final isCapturing = false.obs;
 
   CameraController? cameraController;
 
-  final zones = ['Puncak', 'Sisi Kiri', 'Sisi Kanan', 'Belakang'];
+  final zones = ['Scalp'];
   final images = <String>[].obs;
 
-  // ✅ TAMBAH DI SINI
   String? userDandruff;
   String? userOil;
 
@@ -41,19 +41,17 @@ class ScanController extends GetxController {
 
     try {
       isCapturing.value = true;
-
-      // Pastikan flash tidak nyala saat capture (kecuali user yang nyalain manual)
       if (!isFlashOn.value) {
         await cameraController!.setFlashMode(FlashMode.off);
       }
 
       final XFile file = await cameraController!.takePicture();
       final processed = await _processImage(file.path);
+
+      images.clear();
       addImage(processed);
 
-      if (images.length >= 4) {
-        startAnalysis();
-      }
+      await startAnalysis();
     } catch (e) {
       Get.snackbar('Error', 'Gagal mengambil foto: $e');
     } finally {
@@ -61,13 +59,13 @@ class ScanController extends GetxController {
     }
   }
 
-  /// 📂 GALLERY (tetap pakai picker)
   Future<void> pickFromGallery() async {
     final file = await _picker.pickImage(source: ImageSource.gallery);
     if (file != null) {
       final processed = await _processImage(file.path);
+      images.clear();
       addImage(processed);
-      if (images.length >= 4) startAnalysis();
+      await startAnalysis();
     }
   }
 
@@ -92,7 +90,8 @@ class ScanController extends GetxController {
       width: cropSize,
       height: cropSize,
     );
-    img.Image resized = img.copyResize(cropped, width: image.width);
+
+    img.Image resized = img.copyResize(cropped, width: 224, height: 224);
     img.adjustColor(resized, contrast: 1.2, saturation: 1.1);
 
     final newPath = path.replaceAll('.jpg', '_enhanced.jpg');
@@ -103,8 +102,37 @@ class ScanController extends GetxController {
   void addImage(String path) => images.add(path);
   void removeImage(int index) => images.removeAt(index);
 
-  void startAnalysis() {
-    if (images.length < 4) return;
-    Get.toNamed(AppRoutes.question);
+  // ✅ FIX: startAnalysis sekarang async + pass diseaseKey & confidence
+  Future<void> startAnalysis() async {
+    if (images.isEmpty) return;
+
+    // Navigasi ke loading dulu
+    Get.toNamed(AppRoutes.loading);
+
+    // Simulasi proses CNN (ganti dengan model asli nanti)
+    await Future.delayed(const Duration(seconds: 3));
+
+    // TODO: ganti bagian ini dengan output model CNN yang sesungguhnya
+    // Contoh output model: {'key': 'seborrheic', 'confidence': 0.87}
+    final result = _dummyDetect();
+
+    // Navigasi ke question dengan data penyakit yang terdeteksi
+    Get.offNamed(
+      AppRoutes.question,
+      arguments: {
+        'diseaseKey': result['key'],       // 'alopecia' | 'folliculitis' | 'lice' | 'seborrheic' | 'tinea'
+        'confidence': result['confidence'], // 0.0 - 1.0
+        'imagePath': images.first,
+      },
+    );
   }
+
+  // ── DUMMY DETECT ─────────────────────────────────────────────
+  // Hapus fungsi ini dan ganti dengan CNN asli
+  Map<String, dynamic> _dummyDetect() {
+  return {
+    'key': 'seborrheic',
+    'confidence': 0.91,
+  };
+}
 }

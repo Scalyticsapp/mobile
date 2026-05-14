@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/shared_widgets.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -36,8 +37,8 @@ class _RegisterViewState extends State<RegisterView> {
       body: Stack(
         children: [
 
-          /// 🔥 BACKGROUND (OPTIMIZED)
-          const _BackgroundDecor(),
+          /// 🔥 BACKGROUND 
+          const BackgroundGlow(),
 
           /// 🔥 CONTENT
           Center(
@@ -147,12 +148,54 @@ class _RegisterViewState extends State<RegisterView> {
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: c.isLoading.value
-                                    ? null
-                                    : () => c.register(
-                                          name.text,
-                                          email.text,
-                                          password.text,
-                                        ),
+                                  ? null
+                                  : () {
+
+                                      if (name.text.trim().isEmpty ||
+                                          email.text.trim().isEmpty ||
+                                          password.text.trim().isEmpty) {
+
+                                        Get.snackbar(
+                                          "",
+                                          "",
+                                          titleText: const Text(
+                                            "Register gagal",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          messageText: const Text(
+                                            "Nama, email, dan password wajib diisi",
+                                            style: TextStyle(
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                          snackPosition: SnackPosition.TOP,
+                                          backgroundColor: Color(0xFF1E1E1E),
+                                          borderRadius: 14,
+                                          margin: EdgeInsets.all(16),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 16,
+                                          ),
+                                          duration: Duration(seconds: 2),
+                                          icon: Icon(
+                                            Icons.error_outline,
+                                            color: Colors.redAccent,
+                                          ),
+                                        );
+
+                                        return;
+                                      }
+
+                                      c.register(
+                                        name.text.trim(),
+                                        email.text.trim(),
+                                        password.text.trim(),
+                                      );
+                                    },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.accent,
                                   foregroundColor: Colors.black,
@@ -201,38 +244,69 @@ class _RegisterViewState extends State<RegisterView> {
                           ),
                         ),
 
-                        SizedBox(
+                        Obx(() => SizedBox(
                           width: double.infinity,
                           height: 50,
+
                           child: OutlinedButton(
-                            onPressed: () => c.loginWithGoogle(),
+                            onPressed:
+                                c.isGoogleLoading.value
+                                    ? null
+                                    : () => c.loginWithGoogle(),
+
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
-                                color: AppColors.accent.withOpacity(0.3),
+                                color: AppColors.accent
+                                    .withOpacity(0.3),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                  12,
+                                ),
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/images/google.png',
-                                  width: 20,
-                                  height: 20,
-                                ),
-                                const SizedBox(width: 6),
-                                const Text(
-                                  "Daftar dengan Google",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
+
+                            child:
+                                c.isGoogleLoading.value
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+
+                                        child:
+                                            CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+
+                                        children: [
+                                          Image.asset(
+                                            'assets/images/google.png',
+
+                                            width: 20,
+                                            height: 20,
+                                          ),
+
+                                          const SizedBox(
+                                              width: 6),
+
+                                          const Text(
+                                            "Daftar dengan Google",
+
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                           ),
-                        ),
+                        ))
                       ],
                     ),
                   ),
@@ -275,58 +349,6 @@ class _RegisterViewState extends State<RegisterView> {
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-  }
-}
-
-/// 🔥 BACKGROUND OPTIMIZED (SAMA KAYAK LOGIN)
-class _BackgroundDecor extends StatelessWidget {
-  const _BackgroundDecor();
-
-  @override
-  Widget build(BuildContext context) {
-    return const RepaintBoundary(
-      child: Stack(
-        children: [
-          Positioned(
-            top: -80,
-            left: -110,
-            child: _CircleDecor(size: 360, opacity: 0.15),
-          ),
-          Positioned(
-            bottom: -40,
-            right: -60,
-            child: _CircleDecor(size: 300, opacity: 0.18),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CircleDecor extends StatelessWidget {
-  final double size;
-  final double opacity;
-
-  const _CircleDecor({
-    required this.size,
-    required this.opacity,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            AppColors.accent.withOpacity(opacity),
-            Colors.transparent,
-          ],
         ),
       ),
     );

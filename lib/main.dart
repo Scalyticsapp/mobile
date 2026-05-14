@@ -7,6 +7,7 @@ import 'routes/app_routes.dart';
 import 'controllers/dashboard_controller.dart';
 import 'controllers/auth_controller.dart'; 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,13 @@ void main() async {
 
   Get.put(DashboardController(), permanent: true);
   Get.put(AuthController(), permanent: true);
+
+  SystemChrome.setSystemUIOverlayStyle(
+  const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black,
+    systemNavigationBarIconBrightness: Brightness.light,
+  ),
+);
 
   runApp(const ScalpAIApp());
 }

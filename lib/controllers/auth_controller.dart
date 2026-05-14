@@ -15,6 +15,8 @@ class AuthController extends GetxController {
   var user = {}.obs;
   var isLoading = false.obs;
 
+  var isGoogleLoading = false.obs;
+
   final GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: ['email'],
   serverClientId: '538909060362-imqcte3bcj6so2345q74armnnb56vukg.apps.googleusercontent.com',
@@ -44,6 +46,11 @@ class AuthController extends GetxController {
         } else {
           user.value = {};
         }
+
+        Get.snackbar(
+          "Success",
+          "Login berhasil",
+        );
 
         Get.offAllNamed(AppRoutes.dashboard);
       } else {
@@ -92,7 +99,7 @@ class AuthController extends GetxController {
   // 🔥 LOGIN GOOGLE (INI YANG TADI KURANG)
   Future<void> loginWithGoogle() async {
   try {
-    isLoading.value = true;
+    isGoogleLoading.value = true;
 
     // 🔥 FORCE LOGOUT BIAR POPUP MUNCUL
     await _googleSignIn.signOut();
@@ -128,7 +135,7 @@ class AuthController extends GetxController {
     print("GOOGLE LOGIN ERROR: $e");
     Get.snackbar("Error", "Login Google gagal");
   } finally {
-    isLoading.value = false;
+    isGoogleLoading.value = false;
   }
 }
 

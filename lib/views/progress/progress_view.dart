@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
 import '../../controllers/progress_controller.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../models/scalp_result.dart';
@@ -23,102 +23,213 @@ class ProgressView extends GetView<ProgressController> {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFF060606),
-
-      // ✅ TOP BAR — hitam tanpa border, fixed saat scroll
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF060606),
+        backgroundColor: AppColors.bg,
         elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
-        title: Text(
-          'Progres Scalp',
-          style: AppText.body.copyWith(fontWeight: FontWeight.w600),
-        ),
+        title: Text('Progres Scalp',
+            style: AppText.body.copyWith(fontWeight: FontWeight.w600)),
         centerTitle: true,
       ),
-
       body: SafeArea(
-        top: false,
+  child: Column(
+    children: [
+
+      Expanded(
         child: Stack(
           children: [
-            // BLUR ATAS KIRI
-            Positioned(
-              top: -120,
-              left: -110,
-              child: Container(
-                width: 360,
-                height: 360,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      AppColors.accent.withOpacity(0.15),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            ),
 
-            // BLUR BAWAH KANAN
-            Positioned(
-              bottom: -50,
-              right: -60,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      AppColors.accent.withOpacity(0.18),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            const BackgroundGlow(),
 
-            // CONTENT
-            Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildScanReminder(),
-                        const SizedBox(height: 16),
-                        _buildCalendar(),
-                        const SizedBox(height: 16),
-                        _buildDailyRoutine(),
-                        const SizedBox(height: 16),
-                        _buildHistory(),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-                if (Get.isRegistered<DashboardController>())
-                  Obx(() => AppBottomNav(
-                        currentIndex:
-                            Get.find<DashboardController>().selectedTab.value,
-                        onTap: (i) => Get.find<DashboardController>()
-                            .navigateTo(_tabIndex, i),
-                      ))
-                else
-                  AppBottomNav(currentIndex: _tabIndex, onTap: (_) {}),
-              ],
+            SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                MediaQuery.of(context)
+                        .padding
+                        .bottom +
+                    14,
+              ),
+
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+
+                children: [
+
+                  _buildScanReminder(),
+                  const SizedBox(height: 16),
+
+                  _buildTrackingCard(),
+                  const SizedBox(height: 16),
+
+                  _buildDailyPlan(),
+                  const SizedBox(height: 16),
+
+                  _buildHistory(),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ],
         ),
       ),
+
+      /// NAVBAR
+      Padding(
+        padding: const EdgeInsets.only(
+          left: 10,
+          right: 10,
+          bottom: 10,
+        ),
+
+        child: Obx(
+          () => AppBottomNav(
+            currentIndex:
+                Get.find<DashboardController>()
+                    .selectedTab
+                    .value,
+
+            onTap: (i) =>
+                Get.find<DashboardController>()
+                    .navigateTo(
+              _tabIndex,
+              i,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+                    );
+                  }
+
+  // ── TRACKING CARD (tidak diubah dari asli) ───────────────────
+  Widget _buildTrackingCard() {
+    final history = controller.scanHistory;
+    final lastScore = history.isNotEmpty ? history.first.score : 0;
+    final lastConfidence = history.isNotEmpty ? history.first.confidence : 0.0;
+    final lastDate = history.isNotEmpty ? history.first.date : DateTime.now();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+  color: const Color(0xFF101A00),
+
+  borderRadius:
+      BorderRadius.circular(18),
+        border: Border.all(
+  color:
+      AppColors.accent.withOpacity(0.18),
+),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.analytics_rounded,
+                    color: AppColors.accent),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Progress Tracking',
+                        style: AppText.body
+                            .copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Scan rutin untuk melihat perkembangan scalp kamu.',
+                      style: AppText.caption
+                          .copyWith(fontSize: 11, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          Row(
+            children: [
+              Expanded(child: _buildMiniStat('Health', '$lastScore')),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: _buildMiniStat(
+                      'Confidence', '${(lastConfidence * 100).toInt()}%')),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: _buildMiniStat(
+                      'Terakhir', DateFormat('d MMM', 'id').format(lastDate))),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () => Get.toNamed(AppRoutes.scan,
+                  arguments: {"isProgressScan": true}),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Mulai Scan Progress',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            'Gunakan scan progress secara rutin pada area scalp yang sama agar hasil tracking lebih akurat.',
+            style: AppText.caption
+                .copyWith(fontSize: 10, height: 1.5, color: Colors.white60),
+          ),
+        ],
+      ),
     );
   }
 
-  // ─── SECTION 1: PERINGATAN SCAN ───────────────────────────────────────────
+  Widget _buildMiniStat(String title, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        children: [
+          Text(value,
+              style: AppText.body.copyWith(
+                  fontWeight: FontWeight.bold, color: AppColors.accent)),
+          const SizedBox(height: 4),
+          Text(title, style: AppText.caption.copyWith(fontSize: 10)),
+        ],
+      ),
+    );
+  }
+
+  // ── SCAN REMINDER (tidak diubah dari asli) ───────────────────
   Widget _buildScanReminder() {
     final history = controller.scanHistory;
     final lastScan = history.isNotEmpty ? history.first.date : null;
@@ -133,14 +244,13 @@ class ProgressView extends GetView<ProgressController> {
       );
     }
 
-    final now = DateTime.now();
-    final daysSince = now.difference(lastScan).inDays;
+    final daysSince = DateTime.now().difference(lastScan).inDays;
     final daysUntilNext = 7 - daysSince;
 
     if (daysSince >= 7) {
       return _reminderBanner(
         emoji: '⏰',
-        text: 'Sudah waktunya scan minggu ini! Pantau kondisi scalp kamu sekarang.',
+        text: 'Sudah waktunya scan minggu ini!',
         color: AppColors.red,
         buttonLabel: 'Scan Sekarang',
         onTap: () => Get.toNamed(AppRoutes.scan),
@@ -150,7 +260,7 @@ class ProgressView extends GetView<ProgressController> {
     if (daysUntilNext <= 5) {
       return _reminderBanner(
         emoji: '🔔',
-        text: '$daysUntilNext hari lagi waktunya scan. Siapkan diri kamu!',
+        text: '$daysUntilNext hari lagi waktunya scan.',
         color: AppColors.yellow,
         buttonLabel: null,
         onTap: null,
@@ -179,10 +289,8 @@ class ProgressView extends GetView<ProgressController> {
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              text,
-              style: AppText.caption.copyWith(fontSize: 12, height: 1.5),
-            ),
+            child: Text(text,
+                style: AppText.caption.copyWith(fontSize: 12, height: 1.5)),
           ),
           if (buttonLabel != null && onTap != null) ...[
             const SizedBox(width: 10),
@@ -191,17 +299,12 @@ class ProgressView extends GetView<ProgressController> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  buttonLabel,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
+                    color: color, borderRadius: BorderRadius.circular(10)),
+                child: Text(buttonLabel,
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black)),
               ),
             ),
           ],
@@ -210,228 +313,200 @@ class ProgressView extends GetView<ProgressController> {
     );
   }
 
-  // ─── SECTION 2: KALENDER ──────────────────────────────────────────────────
-  Widget _buildCalendar() {
-    final now = DateTime.now();
-    final firstDay = DateTime(now.year, now.month, 1);
-    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
-    final startWeekday = firstDay.weekday % 7;
-
-    final scanDates = controller.scanHistory
-        .where((h) => h.date.year == now.year && h.date.month == now.month)
-        .map((h) => h.date.day)
-        .toSet();
-
-    final lastScan = controller.scanHistory.isNotEmpty
-        ? controller.scanHistory.first.date
-        : null;
-    final nextScanDate =
-        lastScan != null ? lastScan.add(const Duration(days: 7)) : null;
-    final nextScanDay = (nextScanDate != null &&
-            nextScanDate.year == now.year &&
-            nextScanDate.month == now.month)
-        ? nextScanDate.day
-        : null;
-
-    final monthLabel = DateFormat('MMMM yyyy', 'id').format(now);
-
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(monthLabel,
-              style: AppText.body.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 14),
-
-          // Label hari
-          Row(
-            children: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
-                .map((d) => Expanded(
-                      child: Text(d,
-                          textAlign: TextAlign.center,
-                          style: AppText.caption.copyWith(fontSize: 10)),
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 8),
-
-          // Grid tanggal
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              childAspectRatio: 1,
-            ),
-            itemCount: startWeekday + daysInMonth,
-            itemBuilder: (_, index) {
-              if (index < startWeekday) return const SizedBox();
-
-              final day = index - startWeekday + 1;
-              final isToday = day == now.day;
-              final isScanDay = scanDates.contains(day);
-              final isNextScan = day == nextScanDay;
-
-              Color? bgColor;
-              Color? borderColor;
-              Color textColor = AppColors.muted;
-
-              if (isScanDay) {
-                bgColor = AppColors.accent.withOpacity(0.15);
-                borderColor = AppColors.accent;
-                textColor = AppColors.accent;
-              }
-              if (isToday && !isScanDay) {
-                bgColor = Colors.white.withOpacity(0.05);
-                borderColor = AppColors.muted;
-                textColor = AppColors.textPrimary;
-              }
-              if (isToday && isScanDay) {
-                bgColor = AppColors.accent.withOpacity(0.25);
-                borderColor = AppColors.accent;
-                textColor = AppColors.accent;
-              }
-              if (isNextScan) {
-                bgColor = AppColors.red.withOpacity(0.12);
-                borderColor = AppColors.red;
-                textColor = AppColors.red;
-              }
-
-              return Container(
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  shape: BoxShape.circle,
-                  border: borderColor != null
-                      ? Border.all(color: borderColor, width: 1.5)
-                      : null,
-                ),
-                child: Center(
-                  child: Text(
-                    '$day',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: textColor,
-                      fontWeight: isToday || isScanDay || isNextScan
-                          ? FontWeight.w700
-                          : FontWeight.w400,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 10),
-          const Divider(color: AppColors.border, height: 1),
-          const SizedBox(height: 10),
-
-          Row(children: [
-            _calLegend(AppColors.accent, 'Hari scan'),
-            const SizedBox(width: 16),
-            _calLegend(AppColors.red, 'Scan berikutnya'),
-            const SizedBox(width: 16),
-            _calLegend(AppColors.muted, 'Hari ini'),
-          ]),
-        ],
-      ),
-    );
-  }
-
-  Widget _calLegend(Color color, String label) => Row(
-        children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: color, width: 1.5),
-              color: color.withOpacity(0.15),
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(label, style: AppText.caption.copyWith(fontSize: 10)),
-        ],
-      );
-
-  // ─── SECTION 3: PERAWATAN HARIAN ──────────────────────────────────────────
-  Widget _buildDailyRoutine() {
-    final routines = [
-      _RoutineItem(emoji: '🌿', title: 'Masker Lidah Buaya', desc: '15 menit · Pagi', isDone: true),
-      _RoutineItem(emoji: '💧', title: 'Sampo Anti-Dandruff', desc: '5 menit · Siang', isDone: true),
-      _RoutineItem(emoji: '🍯', title: 'Kondisioner Deep Care', desc: '10 menit · Malam', isDone: false),
-    ];
-
-    final colors = [AppColors.a2, AppColors.accent, AppColors.a3];
-
+  // ── ✅ RENCANA PERAWATAN HARIAN (BARU) ────────────────────────
+  Widget _buildDailyPlan() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('PERAWATAN HARI INI',
-            style: AppText.label.copyWith(letterSpacing: 1.2)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'PERAWATAN HARI INI',
+              style: AppText.label.copyWith(
+                letterSpacing: 1.2,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Obx(() {
+              final done =
+                  controller.dailyTasks.where((t) => t.isDone).length;
+              final total = controller.dailyTasks.length;
+              return Text(
+                '$done/$total selesai',
+                style: AppText.caption.copyWith(
+                  color: AppColors.accent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            }),
+          ],
+        ),
+
+        const SizedBox(height: 4),
+
+        Text(
+          DateFormat('EEEE, d MMMM yyyy', 'id').format(DateTime.now()),
+          style: AppText.caption.copyWith(color: AppColors.muted, fontSize: 13),
+        ),
+
         const SizedBox(height: 10),
-        Column(
-          children: List.generate(routines.length, (i) {
-            final r = routines[i];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: AppCard(
-                padding: const EdgeInsets.all(12),
-                child: Row(children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(9),
-                      color: colors[i].withOpacity(0.1),
-                    ),
-                    child: Center(
-                      child: Text(r.emoji,
-                          style: const TextStyle(fontSize: 16)),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(r.title,
-                            style: AppText.body.copyWith(
-                                fontSize: 12, fontWeight: FontWeight.w600)),
-                        Text(r.desc,
-                            style: AppText.caption.copyWith(fontSize: 10)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 22,
-                    height: 22,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: r.isDone
-                          ? AppColors.accent.withOpacity(0.15)
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: r.isDone ? AppColors.accent : AppColors.border,
-                        width: 1.5,
+
+        // Progress bar
+        Obx(() {
+          final done =
+              controller.dailyTasks.where((t) => t.isDone).length;
+          final total = controller.dailyTasks.length;
+          return Column(children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: total == 0 ? 0 : done / total,
+                backgroundColor: AppColors.s3,
+                valueColor: const AlwaysStoppedAnimation(AppColors.accent),
+                minHeight: 4,
+              ),
+            ),
+            const SizedBox(height: 10),
+          ]);
+        }),
+
+        // List tugas
+        Obx(() => AppCard(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              child: Column(
+                children:
+                    controller.dailyTasks.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final task = entry.value;
+                  final isLast =
+                      index == controller.dailyTasks.length - 1;
+
+                  return GestureDetector(
+                    onTap: () => controller.toggleTask(index),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        border: isLast
+                            ? null
+                            : const Border(
+                                bottom:
+                                    BorderSide(color: AppColors.border)),
+                      ),
+                      child: Row(
+                        children: [
+                          // Checkbox
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 22, height: 22,
+                            decoration: BoxDecoration(
+                              color: task.isDone
+                                  ? AppColors.accent
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: task.isDone
+                                    ? AppColors.accent
+                                    : AppColors.border,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: task.isDone
+                                ? const Icon(Icons.check_rounded,
+                                    size: 14, color: Colors.black)
+                                : null,
+                          ),
+                          const SizedBox(width: 12),
+
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  task.name,
+                                  style: AppText.body.copyWith(
+                                    fontSize: 13,
+                                    color: task.isDone
+                                        ? AppColors.muted
+                                        : AppColors.textPrimary,
+                                    decoration: task.isDone
+                                        ? TextDecoration.lineThrough
+                                        : null,
+                                    decorationColor: AppColors.muted,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(task.duration,
+                                    style: AppText.caption.copyWith(
+                                        fontSize: 10,
+                                        color: AppColors.muted2)),
+                              ],
+                            ),
+                          ),
+
+                          // Waktu
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: task.isDone
+                                  ? AppColors.accent.withOpacity(0.12)
+                                  : AppColors.s3,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              task.time,
+                              style: AppText.caption.copyWith(
+                                fontSize: 10,
+                                color: task.isDone
+                                    ? AppColors.accent
+                                    : AppColors.muted,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: r.isDone
-                        ? const Icon(Icons.check_rounded,
-                            size: 13, color: AppColors.accent)
-                        : null,
-                  ),
-                ]),
+                  );
+                }).toList(),
               ),
-            );
-          }),
+            )),
+
+
+        const SizedBox(height: 8),
+        Center(
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+
+    children: [
+
+      const Icon(
+        Icons.autorenew_rounded,
+        size: 14,
+        color: AppColors.accent,
+      ),
+
+      const SizedBox(width: 6),
+
+      Text(
+        'Rekomendasi diperbarui berdasarkan hasil scan terbaru',
+
+        style: AppText.caption.copyWith(
+          fontSize: 10,
+          color: AppColors.muted2,
         ),
+      ),
+    ],
+  ),
+),
       ],
     );
   }
 
-  // ─── SECTION 4: RIWAYAT SCAN ──────────────────────────────────────────────
+  // ── RIWAYAT SCAN (tidak diubah dari asli) ────────────────────
   Widget _buildHistory() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,7 +517,8 @@ class ProgressView extends GetView<ProgressController> {
         Obx(() {
           final history = controller.scanHistory.take(4).toList();
           return AppCard(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             child: Column(
               children: history.map((h) {
                 final isGood = h.change > 0;
@@ -453,36 +529,56 @@ class ProgressView extends GetView<ProgressController> {
                         ? AppColors.yellow
                         : AppColors.red;
                 final label = isGood
-                    ? 'Membaik'
+                    ? 'Rendah'
                     : isNeutral
-                        ? 'Stabil'
-                        : 'Perlu Perhatian';
+                        ? 'Sedang'
+                        : 'Tinggi';
 
                 return GestureDetector(
                   onTap: () {
                     final result = ScalpResult(
-                      dandruffPct: h.dandruffPct,
-                      oilyPct: 30,
-                      dryPct: 15,
+                      disease: 'Seborrheic Dermatitis',
+                      confidence: h.confidence,
                       healthScore: h.score,
                       scanDate: h.date,
+                      description:
+                          'Terdapat indikasi kulit kepala berminyak disertai ketombe.',
+                      recommendation:
+                          'Gunakan sampo anti-ketombe secara rutin.',
                     );
-                    Get.toNamed(AppRoutes.result, arguments: result);
+                    Get.toNamed(
+  AppRoutes.scanDetail,
+
+  arguments: {
+    'title':
+        'Seborrheic Dermatitis',
+
+    'date':
+        DateFormat(
+          'd MMMM yyyy',
+          'id',
+        ).format(h.date),
+
+    'score':
+        h.score.toString(),
+
+    'status':
+        label,
+  },
+);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     decoration: const BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: AppColors.border)),
+                      border: Border(
+                          bottom: BorderSide(color: AppColors.border)),
                     ),
                     child: Row(
                       children: [
                         Container(
-                          width: 8,
-                          height: 8,
-                          decoration:
-                              BoxDecoration(color: color, shape: BoxShape.circle),
-                        ),
+                            width: 8, height: 8,
+                            decoration: BoxDecoration(
+                                color: color, shape: BoxShape.circle)),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -494,7 +590,7 @@ class ProgressView extends GetView<ProgressController> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Ketombe ${h.dandruffPct.toInt()}%',
+                                'Confidence ${(h.confidence * 100).toInt()}%',
                                 style: AppText.caption.copyWith(fontSize: 10),
                               ),
                             ],
@@ -507,11 +603,9 @@ class ProgressView extends GetView<ProgressController> {
                             color: color.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
-                            label,
-                            style: AppText.caption
-                                .copyWith(color: color, fontSize: 10),
-                          ),
+                          child: Text(label,
+                              style: AppText.caption
+                                  .copyWith(color: color, fontSize: 10)),
                         ),
                         const SizedBox(width: 6),
                         const Icon(Icons.chevron_right_rounded,
@@ -527,19 +621,4 @@ class ProgressView extends GetView<ProgressController> {
       ],
     );
   }
-}
-
-// ─── HELPER MODEL ─────────────────────────────────────────────────────────────
-class _RoutineItem {
-  final String emoji;
-  final String title;
-  final String desc;
-  final bool isDone;
-
-  const _RoutineItem({
-    required this.emoji,
-    required this.title,
-    required this.desc,
-    required this.isDone,
-  });
 }
