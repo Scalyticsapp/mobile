@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../theme/app_theme.dart';
 import '../../widgets/shared_widgets.dart';
+import '../../core/constants/app_assets.dart';
 
 class ScanDetailView extends StatelessWidget {
   const ScanDetailView({super.key});
@@ -250,7 +251,7 @@ ClipRRect(
     ),
 
     child: Image.asset(
-      'assets/images/scalp_sample.jpg',
+      AppAssets.scalpSample,
 
       fit: BoxFit.cover,
     ),

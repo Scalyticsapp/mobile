@@ -4,6 +4,7 @@ import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/shared_widgets.dart';
+import '../../core/constants/app_assets.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -273,7 +274,7 @@ class _LoginViewState extends State<LoginView> {
 
                                         children: [
                                           Image.asset(
-                                            'assets/images/google.png',
+                                            AppAssets.google,
 
                                             width: 20,
                                             height: 20,

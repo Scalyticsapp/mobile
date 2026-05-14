@@ -4,6 +4,7 @@ import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/shared_widgets.dart';
+import '../../core/constants/app_assets.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -286,7 +287,7 @@ class _RegisterViewState extends State<RegisterView> {
 
                                         children: [
                                           Image.asset(
-                                            'assets/images/google.png',
+                                            AppAssets.google,
 
                                             width: 20,
                                             height: 20,

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../theme/app_theme.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/shared_widgets.dart';
+import '../../core/constants/app_assets.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});
@@ -32,7 +33,7 @@ class SplashView extends StatelessWidget {
                           children: [
 
                             Image.asset(
-                              'assets/images/logo.png',
+                              AppAssets.logo,
                               width: 140,
                             ),
 

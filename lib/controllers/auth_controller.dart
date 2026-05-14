@@ -1,165 +1,276 @@
-import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../services/auth_service.dart';
+import '../core/constants/app_strings.dart';
 import '../routes/app_routes.dart';
+import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
-  final storage = const FlutterSecureStorage();
 
-  final supabase = Supabase.instance.client;
+  final FlutterSecureStorage storage =
+      const FlutterSecureStorage();
 
-  var user = {}.obs;
-  var isLoading = false.obs;
+  final SupabaseClient supabase =
+      Supabase.instance.client;
 
-  var isGoogleLoading = false.obs;
+  final RxMap user = {}.obs;
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: ['email'],
-  serverClientId: '538909060362-imqcte3bcj6so2345q74armnnb56vukg.apps.googleusercontent.com',
+  final RxBool isLoading = false.obs;
+  final RxBool isGoogleLoading = false.obs;
+
+  final GoogleSignIn _googleSignIn =
+      GoogleSignIn(
+    scopes: ['email'],
+    serverClientId:
+        '538909060362-imqcte3bcj6so2345q74armnnb56vukg.apps.googleusercontent.com',
   );
 
   // 🔐 LOGIN EMAIL
-  Future<void> login(String email, String password) async {
+  Future<void> login(
+    String email,
+    String password,
+  ) async {
     try {
       isLoading.value = true;
 
-      final res = await _authService.login(email, password);
+      final response =
+          await _authService.login(
+        email,
+        password,
+      );
 
-      print("LOGIN RESPONSE: $res");
+      print(
+        'LOGIN RESPONSE: $response',
+      );
 
-      if (res is Map &&
-          res.containsKey("access_token") &&
-          res["access_token"] != null) {
-        
-        String token = res["access_token"].toString();
+      final hasToken =
+          response is Map &&
+              response.containsKey(
+                'access_token',
+              ) &&
+              response['access_token'] != null;
 
-        await storage.write(key: "token", value: token);
-
-        final me = await _authService.getMe(token);
-
-        if (me is Map) {
-          user.value = me;
-        } else {
-          user.value = {};
-        }
-
+      if (!hasToken) {
         Get.snackbar(
-          "Success",
-          "Login berhasil",
+          'Error',
+          response['message']
+                  ?.toString() ??
+              AppStrings.loginFailed,
         );
-
-        Get.offAllNamed(AppRoutes.dashboard);
-      } else {
-        Get.snackbar(
-          "Error",
-          res["message"]?.toString() ?? "Login gagal",
-        );
+        return;
       }
+
+      final String token =
+          response['access_token']
+              .toString();
+
+      await storage.write(
+        key: 'token',
+        value: token,
+      );
+
+      final userData =
+          await _authService.getMe(
+        token,
+      );
+
+      if (userData is Map) {
+        user.value = userData;
+      } else {
+        user.value = {};
+      }
+
+      Get.snackbar(
+        'Success',
+        AppStrings.loginSuccess,
+      );
+
+      Get.offAllNamed(
+        AppRoutes.dashboard,
+      );
     } catch (e) {
-      print("LOGIN ERROR: $e");
-      Get.snackbar("Error", "Terjadi error saat login");
+      print('LOGIN ERROR: $e');
+
+      Get.snackbar(
+        'Error',
+        AppStrings.serverError,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
   // 📝 REGISTER EMAIL
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(
+    String name,
+    String email,
+    String password,
+  ) async {
     try {
       isLoading.value = true;
 
-      final res = await _authService.register(name, email, password);
+      final response =
+          await _authService.register(
+        name,
+        email,
+        password,
+      );
 
-      print("REGISTER RESPONSE: $res");
+      print(
+        'REGISTER RESPONSE: $response',
+      );
 
-      if (res is Map &&
-          res.containsKey("user") &&
-          res["user"] != null) {
-        
-        Get.snackbar("Success", "Register berhasil, silakan login");
-        Get.offAllNamed(AppRoutes.login);
-      } else {
+      final isSuccess =
+          response is Map &&
+              response.containsKey(
+                'user',
+              ) &&
+              response['user'] != null;
+
+      if (!isSuccess) {
         Get.snackbar(
-          "Error",
-          res["message"]?.toString() ?? "Register gagal",
+          'Error',
+          response['message']
+                  ?.toString() ??
+              AppStrings.registerFailed,
         );
+        return;
       }
+
+      Get.snackbar(
+        'Success',
+        AppStrings.registerSuccess,
+      );
+
+      Get.offAllNamed(
+        AppRoutes.login,
+      );
     } catch (e) {
-      print("REGISTER ERROR: $e");
-      Get.snackbar("Error", "Terjadi error saat register");
+      print('REGISTER ERROR: $e');
+
+      Get.snackbar(
+        'Error',
+        AppStrings.serverError,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // 🔥 LOGIN GOOGLE (INI YANG TADI KURANG)
+  // 🔥 LOGIN GOOGLE
   Future<void> loginWithGoogle() async {
-  try {
-    isGoogleLoading.value = true;
+    try {
+      isGoogleLoading.value = true;
 
-    // 🔥 FORCE LOGOUT BIAR POPUP MUNCUL
-    await _googleSignIn.signOut();
+      // Force logout agar popup akun muncul
+      await _googleSignIn.signOut();
 
-    final googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount?
+          googleUser =
+          await _googleSignIn.signIn();
 
-    if (googleUser == null) return;
+      if (googleUser == null) {
+        return;
+      }
 
-    final googleAuth = await googleUser.authentication;
+      final googleAuth =
+          await googleUser.authentication;
 
-    final idToken = googleAuth.idToken;
-    final accessToken = googleAuth.accessToken;
+      final String? idToken =
+          googleAuth.idToken;
 
-    print("ID TOKEN: $idToken");
+      final String? accessToken =
+          googleAuth.accessToken;
 
-    if (idToken == null || accessToken == null) {
-      throw Exception("Token Google null");
+      print('ID TOKEN: $idToken');
+
+      if (idToken == null ||
+          accessToken == null) {
+        throw Exception(
+          'Google token null',
+        );
+      }
+
+      final response =
+          await supabase.auth
+              .signInWithIdToken(
+        provider:
+            OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      if (response.session == null) {
+        Get.snackbar(
+          'Error',
+          'Login Google gagal',
+        );
+        return;
+      }
+
+      Get.snackbar(
+        'Success',
+        'Login Google berhasil',
+      );
+
+      Get.offAllNamed(
+        AppRoutes.dashboard,
+      );
+    } catch (e) {
+      print(
+        'GOOGLE LOGIN ERROR: $e',
+      );
+
+      Get.snackbar(
+        'Error',
+        'Login Google gagal',
+      );
+    } finally {
+      isGoogleLoading.value = false;
     }
-
-    final res = await supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
-
-    if (res.session != null) {
-      Get.snackbar("Success", "Login Google berhasil");
-      Get.offAllNamed(AppRoutes.dashboard);
-    } else {
-      Get.snackbar("Error", "Login Google gagal");
-    }
-  } catch (e) {
-    print("GOOGLE LOGIN ERROR: $e");
-    Get.snackbar("Error", "Login Google gagal");
-  } finally {
-    isGoogleLoading.value = false;
   }
-}
 
   // 👤 LOAD USER
   Future<void> loadUser() async {
     try {
-      String? token = await storage.read(key: "token");
+      final String? token =
+          await storage.read(
+        key: 'token',
+      );
 
-      if (token != null && token.isNotEmpty) {
-        final me = await _authService.getMe(token);
+      if (token == null ||
+          token.isEmpty) {
+        return;
+      }
 
-        if (me is Map) {
-          user.value = me;
-        }
+      final userData =
+          await _authService.getMe(
+        token,
+      );
+
+      if (userData is Map) {
+        user.value = userData;
       }
     } catch (e) {
-      print("LOAD USER ERROR: $e");
+      print(
+        'LOAD USER ERROR: $e',
+      );
     }
   }
 
   // 🚪 LOGOUT
   Future<void> logout() async {
-    await storage.delete(key: "token");
+    await storage.delete(
+      key: 'token',
+    );
+
     user.value = {};
-    Get.offAllNamed(AppRoutes.login);
+
+    Get.offAllNamed(
+      AppRoutes.login,
+    );
   }
 }

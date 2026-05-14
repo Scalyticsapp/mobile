@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../../models/scalp_result.dart';
 import '../../theme/app_theme.dart';
 import '../../routes/app_routes.dart';
 import '../../controllers/result_controller.dart';
+import '../../core/constants/app_assets.dart';
 
 class ResultView extends StatelessWidget {
   const ResultView({super.key});
@@ -73,7 +73,7 @@ ClipRRect(
       BorderRadius.circular(18),
 
   child: Image.asset(
-    'assets/images/scalp_sample.jpg',
+    AppAssets.scalpSample,
 
     width: double.infinity,
     height: 220,

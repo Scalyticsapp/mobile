@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../core/constants/app_api.dart';
 
 class AuthService {
-  final String baseUrl = "http://10.225.58.243:4000";
 
-  // 🔐 LOGIN
+  final String baseUrl =
+    AppApi.baseUrl;
+
+  // LOGIN
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final res = await http.post(
@@ -30,7 +33,7 @@ class AuthService {
     }
   }
 
-  // 📝 REGISTER
+  // REGISTER
   Future<Map<String, dynamic>> register(
       String name, String email, String password) async {
     try {
@@ -58,7 +61,7 @@ class AuthService {
     }
   }
 
-  // 👤 GET USER (🔥 INI YANG KEMARIN KURANG)
+  // GET USER
   Future<Map<String, dynamic>> getMe(String token) async {
     try {
       final res = await http.get(
