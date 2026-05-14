@@ -30,7 +30,6 @@ class ResultController extends GetxController {
     // ✅ Baca semua data dari question_view
     final String diseaseKey   = args['diseaseKey']   ?? 'seborrheic';
     final String diseaseName  = args['diseaseName']  ?? 'Unknown';
-    final String diseaseEmoji = args['diseaseEmoji'] ?? '';
     final String severity     = args['severity']     ?? 'ringan';
     confidence                = ((args['confidence'] ?? 0.80) as num).toDouble();
     imagePath                 = args['imagePath']    ?? '';

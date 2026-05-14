@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:camera/camera.dart';
 
 import '../../controllers/scan_controller.dart';
-import '../../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
 import '../../routes/app_routes.dart';
 import '../../controllers/dashboard_controller.dart';
 

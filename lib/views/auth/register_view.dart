@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
-import '../../theme/app_theme.dart';
-import '../../widgets/shared_widgets.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_assets.dart';
+import '../../widgets/background_glow.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});

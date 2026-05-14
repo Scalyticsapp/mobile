@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../models/scalp_result.dart';
-import '../../theme/app_theme.dart';
-import '../../routes/app_routes.dart';
+import '../../core/theme/app_theme.dart';
 import '../../controllers/result_controller.dart';
 import '../../core/constants/app_assets.dart';
 

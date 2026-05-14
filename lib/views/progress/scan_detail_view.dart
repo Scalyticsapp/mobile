@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../theme/app_theme.dart';
-import '../../widgets/shared_widgets.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_assets.dart';
 
 class ScanDetailView extends StatelessWidget {

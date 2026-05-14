@@ -5,9 +5,11 @@ import 'package:intl/intl.dart';
 import '../../controllers/progress_controller.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../models/scalp_result.dart';
-import '../../theme/app_theme.dart';
-import '../../widgets/shared_widgets.dart';
+import '../../core/theme/app_theme.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/app_card.dart';
+import '../../widgets/app_bottom_nav.dart';
+import '../../widgets/background_glow.dart';
 
 class ProgressView extends GetView<ProgressController> {
   const ProgressView({super.key});

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../theme/app_theme.dart';
-import '../../widgets/shared_widgets.dart';
+import '../../core/theme/app_theme.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/app_card.dart';
 
 class NotificationView extends StatelessWidget {
   const NotificationView({super.key});

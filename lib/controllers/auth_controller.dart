@@ -47,11 +47,10 @@ class AuthController extends GetxController {
       );
 
       final hasToken =
-          response is Map &&
-              response.containsKey(
-                'access_token',
-              ) &&
-              response['access_token'] != null;
+        response.containsKey(
+          'access_token',
+        ) &&
+        response['access_token'] != null;
 
       if (!hasToken) {
         Get.snackbar(
@@ -77,11 +76,7 @@ class AuthController extends GetxController {
         token,
       );
 
-      if (userData is Map) {
-        user.value = userData;
-      } else {
-        user.value = {};
-      }
+      user.value = userData;
 
       Get.snackbar(
         'Success',
@@ -124,11 +119,10 @@ class AuthController extends GetxController {
       );
 
       final isSuccess =
-          response is Map &&
-              response.containsKey(
-                'user',
-              ) &&
-              response['user'] != null;
+        response.containsKey(
+          'user',
+        ) &&
+        response['user'] != null;
 
       if (!isSuccess) {
         Get.snackbar(
@@ -251,9 +245,8 @@ class AuthController extends GetxController {
         token,
       );
 
-      if (userData is Map) {
-        user.value = userData;
-      }
+      user.value = userData;
+
     } catch (e) {
       print(
         'LOAD USER ERROR: $e',

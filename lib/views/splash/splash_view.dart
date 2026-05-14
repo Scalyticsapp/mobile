@@ -1,78 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../theme/app_theme.dart';
-import '../../routes/app_routes.dart';
-import '../../widgets/shared_widgets.dart';
+
 import '../../core/constants/app_assets.dart';
+import '../../core/theme/app_theme.dart';
+import '../../routes/app_routes.dart';
+import '../../widgets/background_glow.dart';
 
 class SplashView extends StatelessWidget {
-  const SplashView({super.key});
+  const SplashView({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding =
+        MediaQuery.of(context)
+            .padding
+            .bottom;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: Stack(
         children: [
-
           const BackgroundGlow(),
 
-          /// CONTENT
           SafeArea(
             child: Column(
               children: [
-
                 Expanded(
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Transform.translate(
-                        offset: const Offset(0, -20),
+                      padding:
+                          const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child:
+                          Transform.translate(
+                        offset:
+                            const Offset(
+                          0,
+                          -20,
+                        ),
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize:
+                              MainAxisSize.min,
                           children: [
-
                             Image.asset(
                               AppAssets.logo,
                               width: 140,
                             ),
 
-                            const SizedBox(height: 2),
+                            const SizedBox(
+                              height: 2,
+                            ),
 
                             Text.rich(
                               TextSpan(
                                 text: 'Scal',
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 40,
-                                    ),
+                                style:
+                                    Theme.of(
+                                  context,
+                                )
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(
+                                          fontWeight:
+                                              FontWeight
+                                                  .w700,
+                                          fontSize:
+                                              40,
+                                        ),
                                 children: const [
                                   TextSpan(
-                                    text: 'ytics',
-                                    style: TextStyle(color: AppColors.accent),
+                                    text:
+                                        'ytics',
+                                    style:
+                                        TextStyle(
+                                      color:
+                                          AppColors
+                                              .accent,
+                                    ),
                                   ),
                                 ],
                               ),
-                              textAlign: TextAlign.center,
+                              textAlign:
+                                  TextAlign
+                                      .center,
                             ),
 
-                            const SizedBox(height: 24),
+                            const SizedBox(
+                              height: 24,
+                            ),
 
                             Text(
                               'Kulit kepala sehat dimulai dari sini.',
-                              textAlign: TextAlign.center,
-                              style: AppText.heading.copyWith(
+                              textAlign:
+                                  TextAlign
+                                      .center,
+                              style:
+                                  AppText
+                                      .heading
+                                      .copyWith(
                                 fontSize: 38,
                                 height: 1.3,
                               ),
                             ),
 
-                            const SizedBox(height: 14),
+                            const SizedBox(
+                              height: 14,
+                            ),
 
                             Text(
                               'Deteksi kondisi, analisis penyebab, dan perawatan yang tepat untukmu.',
-                              textAlign: TextAlign.center,
-                              style: AppText.body.copyWith(
+                              textAlign:
+                                  TextAlign
+                                      .center,
+                              style:
+                                  AppText
+                                      .body
+                                      .copyWith(
                                 fontSize: 15,
                               ),
                             ),
@@ -83,58 +129,94 @@ class SplashView extends StatelessWidget {
                   ),
                 ),
 
-                /// BUTTON AREA
-                Column(
-                  children: [
-
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        24,
-                        0,
-                        24,
-                        16 + MediaQuery.of(context).padding.bottom,
+                Padding(
+                  padding:
+                      EdgeInsets.fromLTRB(
+                    24,
+                    0,
+                    24,
+                    16 + bottomPadding,
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width:
+                            double.infinity,
+                        child:
+                            ElevatedButton(
+                          onPressed:
+                              () =>
+                                  Get.toNamed(
+                            AppRoutes
+                                .register,
+                          ),
+                          child: const Text(
+                            'Mulai Sekarang',
+                          ),
+                        ),
                       ),
-                      child: Column(
-                        children: [
 
-                          /// BUTTON UTAMA
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () => Get.toNamed(AppRoutes.register),
-                              child: const Text('Mulai Sekarang'),
-                            ),
+                      const SizedBox(
+                        height: 14,
+                      ),
+
+                      SizedBox(
+                        width:
+                            double.infinity,
+                        child:
+                            ElevatedButton(
+                          onPressed:
+                              () =>
+                                  Get.toNamed(
+                            AppRoutes
+                                .login,
                           ),
 
-                          const SizedBox(height: 14),
+                          style:
+                              ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.black,
 
-                          /// 🔥 BUTTON MASUK (SUDAH SOLID & FIX ERROR)
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () => Get.toNamed(AppRoutes.login),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black, // 🔥 hitam pekat
-                                foregroundColor: AppColors.textPrimary,
-                                minimumSize: const Size(double.infinity, 52),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  side: BorderSide(
-                                    color: AppColors.accent.withOpacity(0.4), // 🔥 outline
-                                    width: 1.2,
-                                  ),
-                                ),
-                                elevation: 0, // biar flat
+                            foregroundColor:
+                                AppColors
+                                    .textPrimary,
+
+                            minimumSize:
+                                const Size(
+                              double.infinity,
+                              52,
+                            ),
+
+                            elevation: 0,
+
+                            shape:
+                                RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(
+                                14,
                               ),
-                              child: const Text('Masuk ke Akun'),
+
+                              side:
+                                  BorderSide(
+                                color:
+                                    AppColors
+                                        .accent
+                                        .withOpacity(
+                                  0.4,
+                                ),
+                                width:
+                                    1.2,
+                              ),
                             ),
                           ),
-                        ],
+
+                          child: const Text(
+                            'Masuk ke Akun',
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

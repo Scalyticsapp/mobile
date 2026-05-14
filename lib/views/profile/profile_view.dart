@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
 import '../../routes/app_routes.dart';
-import '../../widgets/shared_widgets.dart';
+import '../../widgets/app_bottom_nav.dart';
 import '../../controllers/dashboard_controller.dart';
+import '../../widgets/background_glow.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
