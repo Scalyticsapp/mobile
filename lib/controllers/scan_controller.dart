@@ -1,88 +1,191 @@
 import 'dart:io';
-import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as img;
-import '../routes/app_routes.dart';
+
 import 'package:camera/camera.dart';
+import 'package:get/get.dart';
+import 'package:image/image.dart'
+    as img;
+import 'package:image_picker/image_picker.dart';
 
-class ScanController extends GetxController {
-  final _picker = ImagePicker();
+import '../routes/app_routes.dart';
 
-  final selectedZone = 'Scalp'.obs;
-  final isFlashOn = false.obs;
-  final isMacroMode = false.obs;
-  final isCapturing = false.obs;
+class ScanController
+    extends GetxController {
+  final ImagePicker _picker =
+      ImagePicker();
 
-  CameraController? cameraController;
+  final RxString selectedZone =
+      'Scalp'.obs;
 
-  final zones = ['Scalp'];
-  final images = <String>[].obs;
+  final RxBool isFlashOn =
+      false.obs;
+
+  final RxBool isMacroMode =
+      false.obs;
+
+  final RxBool isCapturing =
+      false.obs;
+
+  final RxList<String> images =
+      <String>[].obs;
+
+  final List<String> zones = [
+    'Scalp',
+  ];
+
+  CameraController?
+      cameraController;
 
   String? userDandruff;
   String? userOil;
 
-  void selectZone(String zone) => selectedZone.value = zone;
-
-  Future<void> toggleFlash() async {
-    isFlashOn.value = !isFlashOn.value;
-    if (cameraController != null && cameraController!.value.isInitialized) {
-      await cameraController!.setFlashMode(
-        isFlashOn.value ? FlashMode.torch : FlashMode.off,
-      );
-    }
+  // ✅ SELECT ZONE
+  void selectZone(String zone) {
+    selectedZone.value = zone;
   }
 
-  void toggleMacro() => isMacroMode.value = !isMacroMode.value;
+  // ✅ TOGGLE FLASH
+  Future<void> toggleFlash() async {
+    isFlashOn.value =
+        !isFlashOn.value;
 
-  Future<void> captureFromViewfinder() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
-    if (isCapturing.value) return;
+    if (cameraController == null ||
+        !cameraController!
+            .value
+            .isInitialized) {
+      return;
+    }
+
+    await cameraController!
+        .setFlashMode(
+      isFlashOn.value
+          ? FlashMode.torch
+          : FlashMode.off,
+    );
+  }
+
+  // ✅ TOGGLE MACRO
+  void toggleMacro() {
+    isMacroMode.value =
+        !isMacroMode.value;
+  }
+
+  // ✅ CAMERA CAPTURE
+  Future<void>
+      captureFromViewfinder() async {
+    if (cameraController == null ||
+        !cameraController!
+            .value
+            .isInitialized) {
+      return;
+    }
+
+    if (isCapturing.value) {
+      return;
+    }
 
     try {
       isCapturing.value = true;
+
       if (!isFlashOn.value) {
-        await cameraController!.setFlashMode(FlashMode.off);
+        await cameraController!
+            .setFlashMode(
+          FlashMode.off,
+        );
       }
 
-      final XFile file = await cameraController!.takePicture();
-      final processed = await _processImage(file.path);
+      final XFile file =
+          await cameraController!
+              .takePicture();
+
+      final String processedPath =
+          await _processImage(
+        file.path,
+      );
 
       images.clear();
-      addImage(processed);
+
+      addImage(processedPath);
 
       await startAnalysis();
     } catch (e) {
-      Get.snackbar('Error', 'Gagal mengambil foto: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal mengambil foto',
+      );
     } finally {
       isCapturing.value = false;
     }
   }
 
-  Future<void> pickFromGallery() async {
-    final file = await _picker.pickImage(source: ImageSource.gallery);
-    if (file != null) {
-      final processed = await _processImage(file.path);
-      images.clear();
-      addImage(processed);
-      await startAnalysis();
+  // ✅ PICK FROM GALLERY
+  Future<void>
+      pickFromGallery() async {
+    final XFile? file =
+        await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (file == null) {
+      return;
     }
+
+    final String processedPath =
+        await _processImage(
+      file.path,
+    );
+
+    images.clear();
+
+    addImage(processedPath);
+
+    await startAnalysis();
   }
 
-  Future<String> _processImage(String path) async {
-    if (isMacroMode.value) return path;
-    return await _enhanceImage(path);
+  // ✅ PROCESS IMAGE
+  Future<String> _processImage(
+    String path,
+  ) async {
+    if (isMacroMode.value) {
+      return path;
+    }
+
+    return await _enhanceImage(
+      path,
+    );
   }
 
-  Future<String> _enhanceImage(String path) async {
-    final bytes = await File(path).readAsBytes();
-    final image = img.decodeImage(bytes);
-    if (image == null) return path;
+  // ✅ ENHANCE IMAGE
+  Future<String> _enhanceImage(
+    String path,
+  ) async {
+    final bytes =
+        await File(path)
+            .readAsBytes();
 
-    final cropSize = (image.width * 0.6).toInt();
-    final offsetX = ((image.width - cropSize) / 2).toInt();
-    final offsetY = ((image.height - cropSize) / 2).toInt();
+    final image =
+        img.decodeImage(bytes);
 
-    img.Image cropped = img.copyCrop(
+    if (image == null) {
+      return path;
+    }
+
+    final int cropSize =
+        (image.width * 0.6)
+            .toInt();
+
+    final int offsetX =
+        ((image.width - cropSize) /
+                2)
+            .toInt();
+
+    final int offsetY =
+        ((image.height -
+                    cropSize) /
+                2)
+            .toInt();
+
+    final img.Image cropped =
+        img.copyCrop(
       image,
       x: offsetX,
       y: offsetY,
@@ -90,48 +193,82 @@ class ScanController extends GetxController {
       height: cropSize,
     );
 
-    img.Image resized = img.copyResize(cropped, width: 224, height: 224);
-    img.adjustColor(resized, contrast: 1.2, saturation: 1.1);
+    final img.Image resized =
+        img.copyResize(
+      cropped,
+      width: 224,
+      height: 224,
+    );
 
-    final newPath = path.replaceAll('.jpg', '_enhanced.jpg');
-    File(newPath).writeAsBytesSync(img.encodeJpg(resized));
+    img.adjustColor(
+      resized,
+      contrast: 1.2,
+      saturation: 1.1,
+    );
+
+    final String newPath =
+        path.replaceAll(
+      '.jpg',
+      '_enhanced.jpg',
+    );
+
+    File(newPath).writeAsBytesSync(
+      img.encodeJpg(resized),
+    );
+
     return newPath;
   }
 
-  void addImage(String path) => images.add(path);
-  void removeImage(int index) => images.removeAt(index);
+  // ✅ ADD IMAGE
+  void addImage(String path) {
+    images.add(path);
+  }
 
-  // ✅ FIX: startAnalysis sekarang async + pass diseaseKey & confidence
-  Future<void> startAnalysis() async {
-    if (images.isEmpty) return;
+  // ✅ REMOVE IMAGE
+  void removeImage(int index) {
+    images.removeAt(index);
+  }
 
-    // Navigasi ke loading dulu
-    Get.toNamed(AppRoutes.loading);
+  // ✅ START ANALYSIS
+  Future<void> startAnalysis()
+      async {
+    if (images.isEmpty) {
+      return;
+    }
 
-    // Simulasi proses CNN (ganti dengan model asli nanti)
-    await Future.delayed(const Duration(seconds: 3));
+    Get.toNamed(
+      AppRoutes.loading,
+    );
 
-    // TODO: ganti bagian ini dengan output model CNN yang sesungguhnya
-    // Contoh output model: {'key': 'seborrheic', 'confidence': 0.87}
-    final result = _dummyDetect();
+    // Simulasi AI Process
+    await Future.delayed(
+      const Duration(seconds: 3),
+    );
 
-    // Navigasi ke question dengan data penyakit yang terdeteksi
+    final result =
+        _dummyDetect();
+
     Get.offNamed(
       AppRoutes.question,
       arguments: {
-        'diseaseKey': result['key'],       // 'alopecia' | 'folliculitis' | 'lice' | 'seborrheic' | 'tinea'
-        'confidence': result['confidence'], // 0.0 - 1.0
-        'imagePath': images.first,
+        'diseaseKey':
+            result['key'],
+
+        'confidence':
+            result['confidence'],
+
+        'imagePath':
+            images.first,
       },
     );
   }
 
-  // ── DUMMY DETECT ─────────────────────────────────────────────
-  // Hapus fungsi ini dan ganti dengan CNN asli
-  Map<String, dynamic> _dummyDetect() {
-  return {
-    'key': 'seborrheic',
-    'confidence': 0.91,
-  };
-}
+  // ✅ DUMMY AI DETECT
+  Map<String, dynamic>
+      _dummyDetect() {
+    return {
+      'key': 'seborrheic',
+      'confidence': 0.91,
+    };
+  }
 }

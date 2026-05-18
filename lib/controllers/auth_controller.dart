@@ -4,11 +4,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/constants/app_strings.dart';
+import '../data/repositories/auth_repository.dart';
 import '../routes/app_routes.dart';
-import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
-  final AuthService _authService = AuthService();
+  final AuthRepository _authRepository =
+      AuthRepository();
 
   final FlutterSecureStorage storage =
       const FlutterSecureStorage();
@@ -19,7 +20,8 @@ class AuthController extends GetxController {
   final RxMap user = {}.obs;
 
   final RxBool isLoading = false.obs;
-  final RxBool isGoogleLoading = false.obs;
+  final RxBool isGoogleLoading =
+      false.obs;
 
   final GoogleSignIn _googleSignIn =
       GoogleSignIn(
@@ -37,7 +39,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       final response =
-          await _authService.login(
+          await _authRepository.login(
         email,
         password,
       );
@@ -46,11 +48,12 @@ class AuthController extends GetxController {
         'LOGIN RESPONSE: $response',
       );
 
-      final hasToken =
-        response.containsKey(
-          'access_token',
-        ) &&
-        response['access_token'] != null;
+      final bool hasToken =
+          response.containsKey(
+            'access_token',
+          ) &&
+          response['access_token'] !=
+              null;
 
       if (!hasToken) {
         Get.snackbar(
@@ -72,7 +75,7 @@ class AuthController extends GetxController {
       );
 
       final userData =
-          await _authService.getMe(
+          await _authRepository.getMe(
         token,
       );
 
@@ -108,7 +111,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       final response =
-          await _authService.register(
+          await _authRepository.register(
         name,
         email,
         password,
@@ -118,11 +121,9 @@ class AuthController extends GetxController {
         'REGISTER RESPONSE: $response',
       );
 
-      final isSuccess =
-        response.containsKey(
-          'user',
-        ) &&
-        response['user'] != null;
+      final bool isSuccess =
+          response.containsKey('user') &&
+          response['user'] != null;
 
       if (!isSuccess) {
         Get.snackbar(
@@ -143,7 +144,9 @@ class AuthController extends GetxController {
         AppRoutes.login,
       );
     } catch (e) {
-      print('REGISTER ERROR: $e');
+      print(
+        'REGISTER ERROR: $e',
+      );
 
       Get.snackbar(
         'Error',
@@ -223,7 +226,8 @@ class AuthController extends GetxController {
         'Login Google gagal',
       );
     } finally {
-      isGoogleLoading.value = false;
+      isGoogleLoading.value =
+          false;
     }
   }
 
@@ -241,12 +245,11 @@ class AuthController extends GetxController {
       }
 
       final userData =
-          await _authService.getMe(
+          await _authRepository.getMe(
         token,
       );
 
       user.value = userData;
-
     } catch (e) {
       print(
         'LOAD USER ERROR: $e',

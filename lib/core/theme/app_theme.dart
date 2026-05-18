@@ -110,14 +110,22 @@ class AppText {
       );
 
   static TextStyle get caption => GoogleFonts.dmSans(
-        fontSize: 11,
-        color: AppColors.muted,
-        height: 1.5,
-      );
+      fontSize: 11,
+      color: AppColors.muted,
+      height: 1.5,
+    );
 
   static TextStyle get label => GoogleFonts.dmSans(
         fontSize: 10,
         color: AppColors.muted,
+        letterSpacing: 1.2,
+      );
+
+  static TextStyle get sectionTitle =>
+      GoogleFonts.dmSans(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textPrimary,
         letterSpacing: 1.2,
       );
 }

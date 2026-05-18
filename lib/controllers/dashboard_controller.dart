@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../models/scalp_result.dart';
+import '../data/models/scalp_result.dart';
 import '../routes/app_routes.dart';
 
 class DashboardController extends GetxController {

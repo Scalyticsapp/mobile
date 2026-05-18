@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/scalp_result.dart';
+import '../data/models/scalp_result.dart';
 
 class DailyTask {
   final String name;

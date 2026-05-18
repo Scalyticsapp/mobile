@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_theme.dart';
 
 class SectionTitle
@@ -11,19 +12,14 @@ class SectionTitle
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          const EdgeInsets.only(
-        bottom: 10,
-      ),
-      child: Text(
-        text.toUpperCase(),
-        style:
-            AppText.label.copyWith(
-          letterSpacing: 1.4,
-        ),
-      ),
+  Widget build(
+    BuildContext context,
+  ) {
+    return Text(
+      text.toUpperCase(),
+
+      style:
+          AppText.sectionTitle,
     );
   }
 }

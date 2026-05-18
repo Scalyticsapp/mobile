@@ -1,87 +1,106 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:camera/camera.dart';
 
-import '../../controllers/scan_controller.dart';
-import '../../core/theme/app_theme.dart';
-import '../../routes/app_routes.dart';
 import '../../controllers/dashboard_controller.dart';
+import '../../controllers/scan_controller.dart';
 
-class ScanView extends GetView<ScanController> {
-  const ScanView({super.key});
+import '../../core/theme/app_theme.dart';
 
-  static const _tabIndex = 1;
+import '../../routes/app_routes.dart';
+
+import '../../widgets/app_header.dart';
+
+class ScanView
+    extends StatefulWidget {
+  const ScanView({
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (Get.isRegistered<DashboardController>()) {
-        Get.find<DashboardController>()
-            .selectedTab
-            .value = _tabIndex;
-      }
-    });
+  State<ScanView> createState() =>
+      _ScanViewState();
+}
 
+class _ScanViewState
+    extends State<ScanView> {
+  static const int _tabIndex = 1;
+
+  late final ScanController
+      controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller =
+        Get.find<ScanController>();
+
+    WidgetsBinding.instance
+        .addPostFrameCallback(
+      (_) {
+        if (Get.isRegistered<
+            DashboardController>()) {
+          Get.find<
+                  DashboardController>()
+              .selectedTab
+              .value = _tabIndex;
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060606),
+      backgroundColor:
+          const Color(0xFF060606),
 
-      appBar: AppBar(
-  backgroundColor: AppColors.bg,
-  elevation: 0,
-  scrolledUnderElevation: 0,
+      appBar: AppHeader(
+        title: 'Scan Kulit Kepala',
 
-  leading: IconButton(
-    onPressed: () => Get.offAllNamed(
-      AppRoutes.dashboard,
-    ),
+        actions: [
+          Obx(
+            () => IconButton(
+              onPressed:
+                  controller.toggleFlash,
 
-    icon: const Icon(
-      Icons.arrow_back_ios_new_rounded,
-      size: 18,
-    ),
-  ),
+              icon: Icon(
+                controller
+                        .isFlashOn
+                        .value
+                    ? Icons
+                        .flash_on_rounded
+                    : Icons
+                        .flash_off_rounded,
 
-  title: Text(
-    'Scan Scalp',
+                size: 18,
 
-    style: AppText.body.copyWith(
-      fontWeight: FontWeight.w600,
-    ),
-  ),
-
-  centerTitle: true,
-
-  actions: [
-    Obx(
-      () => IconButton(
-        onPressed: controller.toggleFlash,
-
-        icon: Icon(
-          controller.isFlashOn.value
-              ? Icons.flash_on_rounded
-              : Icons.flash_off_rounded,
-
-          size: 18,
-
-          color: controller.isFlashOn.value
-              ? AppColors.accent
-              : AppColors.textPrimary,
-        ),
+                color: controller
+                        .isFlashOn
+                        .value
+                    ? AppColors.accent
+                    : AppColors
+                        .textPrimary,
+              ),
+            ),
+          ),
+        ],
       ),
-    ),
-  ],
-),
 
-      body: SafeArea(
+      body: const SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: _CameraViewfinder(),
+              child:
+                  _CameraViewfinder(),
             ),
 
-            const _BottomControls(),
+            _BottomControls(),
           ],
         ),
       ),
@@ -96,9 +115,11 @@ class _BottomControls
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF060606),
+      color:
+          const Color(0xFF060606),
 
-      padding: const EdgeInsets.fromLTRB(
+      padding:
+          const EdgeInsets.fromLTRB(
         18,
         12,
         18,
@@ -106,10 +127,11 @@ class _BottomControls
       ),
 
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize:
+            MainAxisSize.min,
 
         children: [
-          // WARNING FOTO
+          /// WARNING CARD
           Container(
             width: double.infinity,
 
@@ -120,9 +142,8 @@ class _BottomControls
             ),
 
             decoration: BoxDecoration(
-              color: const Color(
-                0xFF1A1A1A,
-              ),
+              color:
+                  const Color(0xFF1A1A1A),
 
               borderRadius:
                   BorderRadius.circular(
@@ -130,20 +151,31 @@ class _BottomControls
               ),
 
               border: Border.all(
-                color: AppColors.border,
+                color:
+                    AppColors.border,
               ),
             ),
 
             child: Row(
               children: [
-                const Text(
-                  '📸',
-                  style: TextStyle(
-                    fontSize: 20,
+                Padding(
+                  padding:
+                      const EdgeInsets.only(
+                    bottom: 1,
+                  ),
+
+                  child: Icon(
+                    Icons.camera_alt_rounded,
+
+                    size: 19,
+
+                    color: AppColors.accent,
                   ),
                 ),
 
-                const SizedBox(width: 12),
+                const SizedBox(
+                  width: 12,
+                ),
 
                 Expanded(
                   child: Text(
@@ -161,41 +193,49 @@ class _BottomControls
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(
+            height: 14,
+          ),
 
-          // TIPS
+          /// TIPS
           Row(
             children: [
               Expanded(
                 child: _tipCard(
-                  '💡',
+                  Icons.wb_sunny_rounded,
                   'Cahaya\ncukup',
                 ),
               ),
 
-              const SizedBox(width: 10),
+              const SizedBox(
+                width: 10,
+              ),
 
               Expanded(
                 child: _tipCard(
-                  '📏',
+                  Icons.straighten_rounded,
                   '5–10 cm',
                 ),
               ),
 
-              const SizedBox(width: 10),
+              const SizedBox(
+                width: 10,
+              ),
 
               Expanded(
                 child: _tipCard(
-                  '🎯',
+                  Icons.center_focus_strong_rounded,
                   'Tetap\nfokus',
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(
+            height: 18,
+          ),
 
-          // BUTTON CAPTURE
+          /// CAPTURE BUTTON
           Obx(
             () => SizedBox(
               width: double.infinity,
@@ -203,12 +243,13 @@ class _BottomControls
 
               child:
                   ElevatedButton.icon(
-                onPressed: controller
-                        .isCapturing
-                        .value
-                    ? null
-                    : controller
-                        .captureFromViewfinder,
+                onPressed:
+                    controller
+                            .isCapturing
+                            .value
+                        ? null
+                        : controller
+                            .captureFromViewfinder,
 
                 icon: controller
                         .isCapturing
@@ -220,12 +261,15 @@ class _BottomControls
                         child:
                             CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.black,
+
+                          color:
+                              Colors.black,
                         ),
                       )
                     : const Icon(
                         Icons
                             .camera_alt_rounded,
+
                         size: 20,
                       ),
 
@@ -246,7 +290,8 @@ class _BottomControls
                       Colors.black,
 
                   disabledBackgroundColor:
-                      AppColors.accent
+                      AppColors
+                          .accent
                           .withOpacity(
                     0.5,
                   ),
@@ -270,20 +315,24 @@ class _BottomControls
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(
+            height: 10,
+          ),
 
-          // GALLERY
+          /// GALLERY BUTTON
           SizedBox(
             width: double.infinity,
             height: 52,
 
-            child: OutlinedButton.icon(
-              onPressed:
-                  controller.pickFromGallery,
+            child:
+                OutlinedButton.icon(
+              onPressed: controller
+                  .pickFromGallery,
 
               icon: const Icon(
                 Icons
                     .photo_library_rounded,
+
                 size: 20,
               ),
 
@@ -294,17 +343,21 @@ class _BottomControls
               style:
                   OutlinedButton.styleFrom(
                 foregroundColor:
-                AppColors.accent,
+                    AppColors.accent,
 
                 side: BorderSide(
-                  color:
-                      AppColors.accent.withOpacity(0.3),
+                  color: AppColors
+                      .accent
+                      .withOpacity(
+                    0.3,
+                  ),
                 ),
 
                 shape:
                     RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(
+                      BorderRadius
+                          .circular(
                     16,
                   ),
                 ),
@@ -317,7 +370,7 @@ class _BottomControls
   }
 
   Widget _tipCard(
-    String emoji,
+    IconData icon,
     String text,
   ) {
     return Container(
@@ -341,15 +394,17 @@ class _BottomControls
             MainAxisAlignment.center,
 
         children: [
-          Text(
-            emoji,
+          Icon(
+            icon,
 
-            style: const TextStyle(
-              fontSize: 18,
-            ),
+            size: 20,
+
+            color: AppColors.accent,
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(
+            height: 6,
+          ),
 
           Text(
             text,
@@ -358,7 +413,8 @@ class _BottomControls
                 TextAlign.center,
 
             style:
-                AppText.caption.copyWith(
+                AppText.caption
+                    .copyWith(
               fontSize: 10,
               height: 1.2,
             ),
@@ -380,51 +436,66 @@ class _CameraViewfinder
 }
 
 class _CameraViewfinderState
-    extends State<_CameraViewfinder> {
-  CameraController? _controller;
+    extends State<
+        _CameraViewfinder> {
+  CameraController?
+      _cameraController;
 
-  bool _ready = false;
+  late final ScanController
+      controller;
+
+  bool _isReady = false;
 
   @override
   void initState() {
     super.initState();
 
-    _init();
+    controller =
+        Get.find<ScanController>();
+
+    _initializeCamera();
   }
 
-  Future<void> _init() async {
-    final cams =
+  Future<void>
+      _initializeCamera() async {
+    final cameras =
         await availableCameras();
 
-    final back = cams.firstWhere(
-      (c) =>
-          c.lensDirection ==
+    final backCamera =
+        cameras.firstWhere(
+      (camera) =>
+          camera.lensDirection ==
           CameraLensDirection.back,
     );
 
-    _controller = CameraController(
-      back,
+    _cameraController =
+        CameraController(
+      backCamera,
       ResolutionPreset.high,
       enableAudio: false,
     );
 
-    await _controller!.initialize();
+    await _cameraController!
+        .initialize();
 
-    Get.find<ScanController>()
-        .cameraController = _controller;
+    controller.cameraController =
+        _cameraController;
 
-    await _controller!.setFocusMode(
+    await _cameraController!
+        .setFocusMode(
       FocusMode.auto,
     );
 
     if (mounted) {
-      setState(() => _ready = true);
+      setState(() {
+        _isReady = true;
+      });
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _cameraController?.dispose();
 
     super.dispose();
   }
@@ -435,23 +506,25 @@ class _CameraViewfinderState
       fit: StackFit.expand,
 
       children: [
-        _ready
+        _isReady
             ? FittedBox(
                 fit: BoxFit.cover,
 
                 child: SizedBox(
-                  width: _controller!
-                      .value
-                      .previewSize!
-                      .height,
+                  width:
+                      _cameraController!
+                          .value
+                          .previewSize!
+                          .height,
 
-                  height: _controller!
-                      .value
-                      .previewSize!
-                      .width,
+                  height:
+                      _cameraController!
+                          .value
+                          .previewSize!
+                          .width,
 
                   child: CameraPreview(
-                    _controller!,
+                    _cameraController!,
                   ),
                 ),
               )
@@ -464,7 +537,8 @@ class _CameraViewfinderState
               ),
 
         Center(
-          child: _buildFocusFrame(),
+          child:
+              _buildFocusFrame(),
         ),
 
         Positioned(
@@ -496,14 +570,9 @@ class _CameraViewfinderState
 
             child: Row(
               children: [
-                const Text(
-                  '',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
+                const SizedBox(
+                  width: 10,
                 ),
-
-                const SizedBox(width: 10),
 
                 Expanded(
                   child: Text(
@@ -521,94 +590,6 @@ class _CameraViewfinderState
             ),
           ),
         ),
-
-        Positioned(
-          bottom: 14,
-          left: 16,
-          right: 16,
-
-          child: Obx(() {
-            final ctrl =
-                Get.find<ScanController>();
-
-            if (ctrl.images.isEmpty) {
-              return const SizedBox
-                  .shrink();
-            }
-
-            return Row(
-              children: [
-                Text(
-                  'Preview gambar',
-
-                  style: AppText.caption
-                      .copyWith(
-                    fontSize: 10,
-                  ),
-                ),
-
-                const Spacer(),
-
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius
-                              .circular(8),
-
-                      child: Image.file(
-                        File(
-                          ctrl.images
-                              .first,
-                        ),
-
-                        width: 52,
-                        height: 52,
-
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-
-                    Positioned(
-                      top: 2,
-                      right: 2,
-
-                      child:
-                          GestureDetector(
-                        onTap: () =>
-                            ctrl.removeImage(
-                          0,
-                        ),
-
-                        child: Container(
-                          width: 18,
-                          height: 18,
-
-                          decoration:
-                              const BoxDecoration(
-                            color: Color(
-                              0xCC000000,
-                            ),
-
-                            shape: BoxShape
-                                .circle,
-                          ),
-
-                          child: const Icon(
-                            Icons.close,
-                            size: 11,
-                            color:
-                                Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          }),
-        ),
       ],
     );
   }
@@ -621,14 +602,15 @@ class _CameraViewfinderState
       child: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration:
+                BoxDecoration(
               borderRadius:
-                  BorderRadius.circular(
-                18,
-              ),
+                  BorderRadius
+                      .circular(18),
 
               border: Border.all(
-                color: AppColors.accent
+                color: AppColors
+                    .accent
                     .withOpacity(0.7),
 
                 width: 2,
@@ -648,6 +630,7 @@ class _CameraViewfinderState
 
             child: Transform.scale(
               scaleX: -1,
+
               child: _corner(),
             ),
           ),
@@ -658,6 +641,7 @@ class _CameraViewfinderState
 
             child: Transform.scale(
               scaleY: -1,
+
               child: _corner(),
             ),
           ),
@@ -669,6 +653,7 @@ class _CameraViewfinderState
             child: Transform.scale(
               scaleX: -1,
               scaleY: -1,
+
               child: _corner(),
             ),
           ),
@@ -677,17 +662,19 @@ class _CameraViewfinderState
     );
   }
 
-  Widget _corner() => SizedBox(
-        width: 24,
-        height: 24,
+  Widget _corner() {
+    return SizedBox(
+      width: 24,
+      height: 24,
 
-        child: CustomPaint(
-          painter: _CornerPainter(
-            3,
-            AppColors.accent,
-          ),
+      child: CustomPaint(
+        painter: _CornerPainter(
+          3,
+          AppColors.accent,
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _CornerPainter
@@ -702,12 +689,19 @@ class _CornerPainter
   );
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = thickness
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+  void paint(
+    Canvas canvas,
+    Size size,
+  ) {
+    final Paint paint =
+        Paint()
+          ..color = color
+          ..strokeWidth =
+              thickness
+          ..style =
+              PaintingStyle.stroke
+          ..strokeCap =
+              StrokeCap.round;
 
     canvas.drawLine(
       Offset.zero,
@@ -723,5 +717,10 @@ class _CornerPainter
   }
 
   @override
-  bool shouldRepaint(_) => false;
+  bool shouldRepaint(
+    covariant CustomPainter
+        oldDelegate,
+  ) {
+    return false;
+  }
 }
