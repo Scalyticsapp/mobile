@@ -130,8 +130,8 @@ class DiseaseQuestion {
 }
 
 class DiseaseAdvice {
-  final String severity;       // 'ringan' | 'sedang' | 'berat'
-  final String severityLabel;  // 'Ringan' | 'Sedang' | 'Berat'
+  final String severity; // 'ringan' | 'sedang' | 'berat'
+  final String severityLabel; // 'Ringan' | 'Sedang' | 'Berat'
   final List<String> treatments;
   final String doctorAdvice;
 
@@ -144,8 +144,8 @@ class DiseaseAdvice {
 }
 
 class DiseaseInfo {
-  final String key;        // sama dengan nama folder dataset
-  final String name;       // nama lengkap penyakit
+  final String key; // sama dengan nama folder dataset
+  final String name; // nama lengkap penyakit
   final String emoji;
   final String description;
   final String cause;
@@ -173,7 +173,6 @@ class DiseaseInfo {
 
 class DiseaseData {
   static const Map<String, DiseaseInfo> diseases = {
-
     // 1. ALOPECIA AREATA
     'alopecia': DiseaseInfo(
       key: 'alopecia',
@@ -191,12 +190,20 @@ class DiseaseData {
         DiseaseQuestion(
           id: 'duration',
           question: 'Sudah berapa lama rambut rontok di area ini?',
-          options: ['Baru (< 1 minggu)', 'Beberapa minggu', 'Lebih dari 1 bulan'],
+          options: [
+            'Baru (< 1 minggu)',
+            'Beberapa minggu',
+            'Lebih dari 1 bulan'
+          ],
         ),
         DiseaseQuestion(
           id: 'spread',
           question: 'Bagaimana bentuk area yang botak?',
-          options: ['Bulat kecil (< 2 cm)', 'Bulat besar atau meluas', 'Menyebar tidak beraturan'],
+          options: [
+            'Bulat kecil (< 2 cm)',
+            'Bulat besar atau meluas',
+            'Menyebar tidak beraturan'
+          ],
         ),
         DiseaseQuestion(
           id: 'family',
@@ -248,7 +255,8 @@ class DiseaseData {
       emoji: '',
       description:
           'Peradangan atau infeksi pada folikel rambut yang menghasilkan benjolan merah kecil atau pustul berisi nanah di kulit kepala.',
-      cause: 'Infeksi bakteri Staphylococcus, keringat berlebih, atau produk rambut yang menyumbat pori.',
+      cause:
+          'Infeksi bakteri Staphylococcus, keringat berlebih, atau produk rambut yang menyumbat pori.',
       symptoms: [
         'Benjolan merah kecil di sekitar folikel',
         'Pustul berisi cairan atau nanah',
@@ -263,12 +271,20 @@ class DiseaseData {
         DiseaseQuestion(
           id: 'pus',
           question: 'Apakah ada cairan atau nanah keluar dari benjolan?',
-          options: ['Tidak ada', 'Sedikit cairan bening', 'Nanah kuning atau hijau'],
+          options: [
+            'Tidak ada',
+            'Sedikit cairan bening',
+            'Nanah kuning atau hijau'
+          ],
         ),
         DiseaseQuestion(
           id: 'product',
           question: 'Apakah baru-baru ini memakai produk rambut baru?',
-          options: ['Tidak ada produk baru', 'Tidak yakin', 'Ya, baru memakai produk baru'],
+          options: [
+            'Tidak ada produk baru',
+            'Tidak yakin',
+            'Ya, baru memakai produk baru'
+          ],
         ),
       ],
       adviceByAnswers: {
@@ -314,7 +330,8 @@ class DiseaseData {
       emoji: '',
       description:
           'Parasit serangga kecil yang hidup di kulit kepala dan menghisap darah, menyebabkan gatal hebat. Sangat menular lewat kontak langsung.',
-      cause: 'Penularan melalui kontak kepala langsung atau berbagi sisir, topi, dan handuk.',
+      cause:
+          'Penularan melalui kontak kepala langsung atau berbagi sisir, topi, dan handuk.',
       symptoms: [
         'Gatal hebat terutama di belakang telinga dan tengkuk',
         'Kutu dewasa terlihat di rambut',
@@ -388,7 +405,8 @@ class DiseaseData {
       emoji: '',
       description:
           'Peradangan kulit kepala akibat pertumbuhan berlebih jamur Malassezia yang hidup secara alami di kulit. Ini adalah penyebab ketombe paling umum. Bersifat kronis tapi bisa dikendalikan dengan perawatan rutin.',
-      cause: 'Pertumbuhan berlebih jamur Malassezia yang memecah sebum menjadi asam lemak iritatif. Diperparah oleh produksi minyak berlebih, perubahan hormonal, stres, cuaca dingin, dan sistem imun yang lemah.',
+      cause:
+          'Pertumbuhan berlebih jamur Malassezia yang memecah sebum menjadi asam lemak iritatif. Diperparah oleh produksi minyak berlebih, perubahan hormonal, stres, cuaca dingin, dan sistem imun yang lemah.',
       symptoms: [
         'Ketombe berminyak berwarna kuning atau putih',
         'Kulit kepala kemerahan dan terasa gatal',
@@ -467,7 +485,8 @@ class DiseaseData {
       emoji: '',
       description:
           'Infeksi jamur (ringworm) pada kulit kepala dan rambut yang sangat umum, terutama pada anak-anak. Sangat menular lewat kontak langsung.',
-      cause: 'Infeksi jamur dermatofita, menular melalui kontak langsung atau berbagi alat rambut.',
+      cause:
+          'Infeksi jamur dermatofita, menular melalui kontak langsung atau berbagi alat rambut.',
       symptoms: [
         'Bercak botak bersisik',
         'Kemerahan dan gatal',
@@ -561,10 +580,14 @@ class DiseaseData {
   /// Konversi severity ke healthScore (untuk kompatibilitas ScalpResult)
   static int severityToHealthScore(String severity) {
     switch (severity) {
-      case 'ringan': return 85;
-      case 'sedang': return 72;
-      case 'berat':  return 55;
-      default:       return 72;
+      case 'ringan':
+        return 85;
+      case 'sedang':
+        return 72;
+      case 'berat':
+        return 55;
+      default:
+        return 72;
     }
   }
 }

@@ -8,23 +8,18 @@ import '../data/repositories/auth_repository.dart';
 import '../routes/app_routes.dart';
 
 class AuthController extends GetxController {
-  final AuthRepository _authRepository =
-      AuthRepository();
+  final AuthRepository _authRepository = AuthRepository();
 
-  final FlutterSecureStorage storage =
-      const FlutterSecureStorage();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
 
-  final SupabaseClient supabase =
-      Supabase.instance.client;
+  final SupabaseClient supabase = Supabase.instance.client;
 
   final RxMap user = {}.obs;
 
   final RxBool isLoading = false.obs;
-  final RxBool isGoogleLoading =
-      false.obs;
+  final RxBool isGoogleLoading = false.obs;
 
-  final GoogleSignIn _googleSignIn =
-      GoogleSignIn(
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email'],
     serverClientId:
         '538909060362-imqcte3bcj6so2345q74armnnb56vukg.apps.googleusercontent.com',
@@ -38,8 +33,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response =
-          await _authRepository.login(
+      final response = await _authRepository.login(
         email,
         password,
       );
@@ -48,34 +42,27 @@ class AuthController extends GetxController {
         'LOGIN RESPONSE: $response',
       );
 
-      final bool hasToken =
-          response.containsKey(
+      final bool hasToken = response.containsKey(
             'access_token',
           ) &&
-          response['access_token'] !=
-              null;
+          response['access_token'] != null;
 
       if (!hasToken) {
         Get.snackbar(
           'Error',
-          response['message']
-                  ?.toString() ??
-              AppStrings.loginFailed,
+          response['message']?.toString() ?? AppStrings.loginFailed,
         );
         return;
       }
 
-      final String token =
-          response['access_token']
-              .toString();
+      final String token = response['access_token'].toString();
 
       await storage.write(
         key: 'token',
         value: token,
       );
 
-      final userData =
-          await _authRepository.getMe(
+      final userData = await _authRepository.getMe(
         token,
       );
 
@@ -110,8 +97,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response =
-          await _authRepository.register(
+      final response = await _authRepository.register(
         name,
         email,
         password,
@@ -122,15 +108,12 @@ class AuthController extends GetxController {
       );
 
       final bool isSuccess =
-          response.containsKey('user') &&
-          response['user'] != null;
+          response.containsKey('user') && response['user'] != null;
 
       if (!isSuccess) {
         Get.snackbar(
           'Error',
-          response['message']
-                  ?.toString() ??
-              AppStrings.registerFailed,
+          response['message']?.toString() ?? AppStrings.registerFailed,
         );
         return;
       }
@@ -165,37 +148,28 @@ class AuthController extends GetxController {
       // Force logout agar popup akun muncul
       await _googleSignIn.signOut();
 
-      final GoogleSignInAccount?
-          googleUser =
-          await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         return;
       }
 
-      final googleAuth =
-          await googleUser.authentication;
+      final googleAuth = await googleUser.authentication;
 
-      final String? idToken =
-          googleAuth.idToken;
+      final String? idToken = googleAuth.idToken;
 
-      final String? accessToken =
-          googleAuth.accessToken;
+      final String? accessToken = googleAuth.accessToken;
 
       print('ID TOKEN: $idToken');
 
-      if (idToken == null ||
-          accessToken == null) {
+      if (idToken == null || accessToken == null) {
         throw Exception(
           'Google token null',
         );
       }
 
-      final response =
-          await supabase.auth
-              .signInWithIdToken(
-        provider:
-            OAuthProvider.google,
+      final response = await supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
         idToken: idToken,
         accessToken: accessToken,
       );
@@ -226,26 +200,22 @@ class AuthController extends GetxController {
         'Login Google gagal',
       );
     } finally {
-      isGoogleLoading.value =
-          false;
+      isGoogleLoading.value = false;
     }
   }
 
   // 👤 LOAD USER
   Future<void> loadUser() async {
     try {
-      final String? token =
-          await storage.read(
+      final String? token = await storage.read(
         key: 'token',
       );
 
-      if (token == null ||
-          token.isEmpty) {
+      if (token == null || token.isEmpty) {
         return;
       }
 
-      final userData =
-          await _authRepository.getMe(
+      final userData = await _authRepository.getMe(
         token,
       );
 

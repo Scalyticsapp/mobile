@@ -11,11 +11,8 @@ class AppCard extends StatelessWidget {
 
   const AppCard({
     super.key,
-
     required this.child,
-
     this.padding,
-
     this.onTap,
   });
 
@@ -23,27 +20,18 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-
       child: Container(
         width: double.infinity,
-
-        padding:
-            padding ??
-            const EdgeInsets.all(18),
-
+        padding: padding ?? const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: AppColors.s1,
-
-          borderRadius:
-              BorderRadius.circular(
+          borderRadius: BorderRadius.circular(
             22,
           ),
-
           border: Border.all(
             color: AppColors.border,
           ),
         ),
-
         child: child,
       ),
     );

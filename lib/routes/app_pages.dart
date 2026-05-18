@@ -36,68 +36,56 @@ class AppPages {
       name: AppRoutes.splash,
       page: () => const SplashView(),
     ),
-
     GetPage(
       name: AppRoutes.login,
       page: () => LoginView(),
       binding: AuthBinding(),
     ),
-
     GetPage(
       name: AppRoutes.register,
       page: () => RegisterView(),
       binding: AuthBinding(),
     ),
-
     GetPage(
       name: AppRoutes.dashboard,
       page: () => DashboardView(),
       binding: DashboardBinding(),
     ),
-
     GetPage(
       name: AppRoutes.scan,
       page: () => ScanView(),
       binding: ScanBinding(),
     ),
-
     GetPage(
       name: AppRoutes.loading,
       page: () => LoadingView(),
     ),
-
     GetPage(
       name: AppRoutes.question,
       page: () => const QuestionView(),
     ),
-
     GetPage(
       name: AppRoutes.result,
       page: () => const ResultView(),
       binding: ResultBinding(),
     ),
-
     GetPage(
       name: AppRoutes.recommendation,
       page: () => RecommendationView(),
     ),
-
     GetPage(
       name: AppRoutes.progress,
       page: () => ProgressView(),
       binding: ProgressBinding(),
     ),
-
     GetPage(
       name: AppRoutes.profile,
       page: () => ProfileView(),
     ),
-
     GetPage(
       name: AppRoutes.notification,
       page: () => const NotificationView(),
     ),
-
     GetPage(
       name: AppRoutes.scanDetail,
       page: () => const ScanDetailView(),

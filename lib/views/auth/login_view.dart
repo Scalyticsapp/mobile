@@ -10,34 +10,23 @@ import '../../routes/app_routes.dart';
 
 import '../../widgets/background_glow.dart';
 
-class LoginView
-    extends StatefulWidget {
+class LoginView extends StatefulWidget {
   const LoginView({
     super.key,
   });
 
   @override
-  State<LoginView>
-      createState() =>
-          _LoginViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState
-    extends State<LoginView> {
-  final AuthController
-      controller =
-      Get.find();
+class _LoginViewState extends State<LoginView> {
+  final AuthController controller = Get.find();
 
-  final TextEditingController
-      emailController =
-      TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
-  final TextEditingController
-      passwordController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  bool isPasswordVisible =
-      false;
+  bool isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -53,9 +42,7 @@ class _LoginViewState
     BuildContext context,
   ) {
     return Scaffold(
-      backgroundColor:
-          AppColors.bg,
-
+      backgroundColor: AppColors.bg,
       body: Stack(
         children: [
           /// BACKGROUND
@@ -63,13 +50,10 @@ class _LoginViewState
 
           /// CONTENT
           Center(
-            child:
-                SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 24,
               ),
-
               child: Column(
                 children: [
                   /// LOGO
@@ -106,33 +90,22 @@ class _LoginViewState
     return Text.rich(
       TextSpan(
         text: 'Scal',
-
         style: Theme.of(
           context,
-        )
-            .textTheme
-            .titleLarge!
-            .copyWith(
-              fontWeight:
-                  FontWeight.w700,
-
+        ).textTheme.titleLarge!.copyWith(
+              fontWeight: FontWeight.w700,
               fontSize: 30,
             ),
-
         children: const [
           TextSpan(
             text: 'ytics',
-
             style: TextStyle(
-              color:
-                  AppColors.accent,
+              color: AppColors.accent,
             ),
           ),
         ],
       ),
-
-      textAlign:
-          TextAlign.center,
+      textAlign: TextAlign.center,
     );
   }
 
@@ -140,38 +113,26 @@ class _LoginViewState
   Widget _buildLoginCard() {
     return Container(
       width: double.infinity,
-
-      padding:
-          const EdgeInsets.all(
+      padding: const EdgeInsets.all(
         28,
       ),
-
       decoration: BoxDecoration(
-        color: Colors.black
-            .withOpacity(0.4),
-
-        borderRadius:
-            BorderRadius.circular(
+        color: Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(
           20,
         ),
-
         border: Border.all(
-          color: AppColors
-              .accent
-              .withOpacity(0.2),
+          color: AppColors.accent.withOpacity(0.2),
         ),
       ),
-
       child: Column(
         children: [
           /// TITLE
           const Text(
             'Login',
-
             style: TextStyle(
               fontSize: 24,
-              fontWeight:
-                  FontWeight.bold,
+              fontWeight: FontWeight.bold,
             ),
           ),
 
@@ -188,13 +149,9 @@ class _LoginViewState
 
           /// EMAIL INPUT
           _buildInput(
-            controller:
-                emailController,
-
+            controller: emailController,
             hint: 'Email',
-
-            icon:
-                Icons.mail_outline,
+            icon: Icons.mail_outline,
           ),
 
           const SizedBox(
@@ -203,14 +160,9 @@ class _LoginViewState
 
           /// PASSWORD INPUT
           _buildInput(
-            controller:
-                passwordController,
-
+            controller: passwordController,
             hint: 'Password',
-
-            icon:
-                Icons.lock_outline,
-
+            icon: Icons.lock_outline,
             isPassword: true,
           ),
 
@@ -234,29 +186,20 @@ class _LoginViewState
   /// REGISTER LINK
   Widget _buildRegisterLink() {
     return Row(
-      mainAxisAlignment:
-          MainAxisAlignment.center,
-
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
           'Belum punya akun? ',
         ),
-
         GestureDetector(
-          onTap: () =>
-              Get.toNamed(
+          onTap: () => Get.toNamed(
             AppRoutes.register,
           ),
-
           child: const Text(
             'Daftar',
-
             style: TextStyle(
-              color:
-                  AppColors.accent,
-
-              fontWeight:
-                  FontWeight.bold,
+              color: AppColors.accent,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -270,59 +213,33 @@ class _LoginViewState
       () => SizedBox(
         width: double.infinity,
         height: 50,
-
         child: ElevatedButton(
-          onPressed:
-              controller
-                      .isLoading
-                      .value
-                  ? null
-                  : _handleLogin,
-
-          style:
-              ElevatedButton.styleFrom(
-            backgroundColor:
-                AppColors.accent,
-
-            foregroundColor:
-                Colors.black,
-
-            shape:
-                RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(
+          onPressed: controller.isLoading.value ? null : _handleLogin,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.accent,
+            foregroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
                 12,
               ),
             ),
           ),
-
-          child:
-              controller
-                      .isLoading
-                      .value
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-
-                      child:
-                          CircularProgressIndicator(
-                        strokeWidth: 2,
-
-                        color:
-                            Colors.black,
-                      ),
-                    )
-                  : const Text(
-                      'Masuk',
-
-                      style: TextStyle(
-                        fontSize: 16,
-
-                        fontWeight:
-                            FontWeight
-                                .bold,
-                      ),
-                    ),
+          child: controller.isLoading.value
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.black,
+                  ),
+                )
+              : const Text(
+                  'Masuk',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
         ),
       ),
     );
@@ -331,35 +248,27 @@ class _LoginViewState
   /// DIVIDER
   Widget _buildDivider() {
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: 20,
       ),
-
       child: Row(
         children: [
           Expanded(
             child: Divider(
-              color: Colors.white
-                  .withOpacity(0.2),
+              color: Colors.white.withOpacity(0.2),
             ),
           ),
-
           const Padding(
-            padding:
-                EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
               horizontal: 10,
             ),
-
             child: Text(
               'Atau',
             ),
           ),
-
           Expanded(
             child: Divider(
-              color: Colors.white
-                  .withOpacity(0.2),
+              color: Colors.white.withOpacity(0.2),
             ),
           ),
         ],
@@ -373,75 +282,47 @@ class _LoginViewState
       () => SizedBox(
         width: double.infinity,
         height: 50,
-
         child: OutlinedButton(
-          onPressed:
-              controller
-                      .isGoogleLoading
-                      .value
-                  ? null
-                  : controller
-                      .loginWithGoogle,
-
-          style:
-              OutlinedButton.styleFrom(
+          onPressed: controller.isGoogleLoading.value
+              ? null
+              : controller.loginWithGoogle,
+          style: OutlinedButton.styleFrom(
             side: BorderSide(
-              color: AppColors
-                  .accent
-                  .withOpacity(0.3),
+              color: AppColors.accent.withOpacity(0.3),
             ),
-
-            shape:
-                RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
                 12,
               ),
             ),
           ),
-
-          child:
-              controller
-                      .isGoogleLoading
-                      .value
-                  ? const SizedBox(
+          child: controller.isGoogleLoading.value
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      AppAssets.google,
                       width: 20,
                       height: 20,
-
-                      child:
-                          CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .center,
-
-                      children: [
-                        Image.asset(
-                          AppAssets
-                              .google,
-
-                          width: 20,
-                          height: 20,
-                        ),
-
-                        const SizedBox(
-                          width: 6,
-                        ),
-
-                        const Text(
-                          'Login dengan Google',
-
-                          style: TextStyle(
-                            fontWeight:
-                                FontWeight
-                                    .w500,
-                          ),
-                        ),
-                      ],
                     ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    const Text(
+                      'Login dengan Google',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
@@ -449,23 +330,16 @@ class _LoginViewState
 
   /// HANDLE LOGIN
   void _handleLogin() {
-    if (emailController.text
-            .trim()
-            .isEmpty ||
-        passwordController.text
-            .trim()
-            .isEmpty) {
+    if (emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
       _showValidationError();
 
       return;
     }
 
     controller.login(
-      emailController.text
-          .trim(),
-
-      passwordController.text
-          .trim(),
+      emailController.text.trim(),
+      passwordController.text.trim(),
     );
   }
 
@@ -474,57 +348,37 @@ class _LoginViewState
     Get.snackbar(
       '',
       '',
-
       titleText: const Text(
         'Login gagal',
-
         style: TextStyle(
           color: Colors.white,
-
-          fontWeight:
-              FontWeight.bold,
-
+          fontWeight: FontWeight.bold,
           fontSize: 16,
         ),
       ),
-
       messageText: const Text(
         'Email dan password wajib diisi',
-
         style: TextStyle(
           color: Colors.white70,
         ),
       ),
-
-      snackPosition:
-          SnackPosition.TOP,
-
-      backgroundColor:
-          const Color(
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: const Color(
         0xFF1E1E1E,
       ),
-
       borderRadius: 14,
-
-      margin:
-          const EdgeInsets.all(
+      margin: const EdgeInsets.all(
         16,
       ),
-
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 20,
         vertical: 16,
       ),
-
-      duration:
-          const Duration(
+      duration: const Duration(
         seconds: 2,
       ),
-
       icon: const Icon(
         Icons.error_outline,
-
         color: Colors.redAccent,
       ),
     );
@@ -532,61 +386,35 @@ class _LoginViewState
 
   /// INPUT
   Widget _buildInput({
-    required TextEditingController
-        controller,
-
+    required TextEditingController controller,
     required String hint,
-
     required IconData icon,
-
     bool isPassword = false,
   }) {
     return TextField(
       controller: controller,
-
-      obscureText:
-          isPassword &&
-              !isPasswordVisible,
-
+      obscureText: isPassword && !isPasswordVisible,
       decoration: InputDecoration(
         hintText: hint,
-
         prefixIcon: Icon(
           icon,
         ),
-
-        suffixIcon:
-            isPassword
-                ? IconButton(
-                    splashColor:
-                        Colors
-                            .transparent,
-
-                    highlightColor:
-                        Colors
-                            .transparent,
-
-                    icon: Icon(
-                      isPasswordVisible
-                          ? Icons
-                              .visibility
-                          : Icons
-                              .visibility_off,
-                    ),
-
-                    onPressed: () {
-                      setState(() {
-                        isPasswordVisible =
-                            !isPasswordVisible;
-                      });
-                    },
-                  )
-                : null,
-
-        border:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(
+        suffixIcon: isPassword
+            ? IconButton(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                icon: Icon(
+                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isPasswordVisible = !isPasswordVisible;
+                  });
+                },
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
             12,
           ),
         ),
@@ -595,8 +423,7 @@ class _LoginViewState
   }
 }
 
-class _Logo
-    extends StatelessWidget {
+class _Logo extends StatelessWidget {
   const _Logo();
 
   @override
@@ -605,11 +432,8 @@ class _Logo
   ) {
     return Image.asset(
       AppAssets.logo,
-
       width: 100,
-
-      filterQuality:
-          FilterQuality.low,
+      filterQuality: FilterQuality.low,
     );
   }
 }

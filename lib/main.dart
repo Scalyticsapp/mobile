@@ -17,8 +17,7 @@ import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   await _initializeApp();
 
@@ -28,22 +27,19 @@ void main() async {
 }
 
 // ✅ INITIALIZE APP
-Future<void> _initializeApp()
-    async {
+Future<void> _initializeApp() async {
   await initializeDateFormatting(
     'id',
     null,
   );
 
   await Supabase.initialize(
-    url:
-        'https://fsknwbbganyyxpnnrntt.supabase.co',
-
+    url: 'https://fsknwbbganyyxpnnrntt.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZza253YmJnYW55eXhwbm5ybnR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3ODI2ODMsImV4cCI6MjA5MzM1ODY4M30.KSnDL4uSLIREh9eAeOlClsnb-vPNAGcbbk6fhqIC6gw',
   );
 
-    Get.put(
+  Get.put(
     DashboardController(),
     permanent: true,
   );
@@ -58,20 +54,15 @@ Future<void> _initializeApp()
     permanent: true,
   );
 
-  SystemChrome
-      .setSystemUIOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      systemNavigationBarColor:
-          Colors.black,
-
-      systemNavigationBarIconBrightness:
-          Brightness.light,
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
 }
 
-class ScalpAIApp
-    extends StatelessWidget {
+class ScalpAIApp extends StatelessWidget {
   const ScalpAIApp({
     super.key,
   });
@@ -82,17 +73,10 @@ class ScalpAIApp
   ) {
     return GetMaterialApp(
       title: 'ScalpAI',
-
-      debugShowCheckedModeBanner:
-          false,
-
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-
-      initialRoute:
-          AppRoutes.splash,
-
-      getPages:
-          AppPages.routes,
+      initialRoute: AppRoutes.splash,
+      getPages: AppPages.routes,
     );
   }
 }

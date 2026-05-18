@@ -2,80 +2,59 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
-import 'package:image/image.dart'
-    as img;
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 import '../routes/app_routes.dart';
 
-class ScanController
-    extends GetxController {
-  final ImagePicker _picker =
-      ImagePicker();
+class ScanController extends GetxController {
+  final ImagePicker _picker = ImagePicker();
 
-  final RxString selectedZone =
-      'Scalp'.obs;
+  final RxString selectedZone = 'Scalp'.obs;
 
-  final RxBool isFlashOn =
-      false.obs;
+  final RxBool isFlashOn = false.obs;
 
-  final RxBool isMacroMode =
-      false.obs;
+  final RxBool isMacroMode = false.obs;
 
-  final RxBool isCapturing =
-      false.obs;
+  final RxBool isCapturing = false.obs;
 
-  final RxList<String> images =
-      <String>[].obs;
+  final RxList<String> images = <String>[].obs;
 
   final List<String> zones = [
     'Scalp',
   ];
 
-  CameraController?
-      cameraController;
+  CameraController? cameraController;
 
   String? userDandruff;
   String? userOil;
 
-  // ✅ SELECT ZONE
+  // SELECT ZONE
   void selectZone(String zone) {
     selectedZone.value = zone;
   }
 
-  // ✅ TOGGLE FLASH
+  // TOGGLE FLASH
   Future<void> toggleFlash() async {
-    isFlashOn.value =
-        !isFlashOn.value;
+    isFlashOn.value = !isFlashOn.value;
 
-    if (cameraController == null ||
-        !cameraController!
-            .value
-            .isInitialized) {
+    if (cameraController == null || !cameraController!.value.isInitialized) {
       return;
     }
 
-    await cameraController!
-        .setFlashMode(
-      isFlashOn.value
-          ? FlashMode.torch
-          : FlashMode.off,
+    await cameraController!.setFlashMode(
+      isFlashOn.value ? FlashMode.torch : FlashMode.off,
     );
   }
 
-  // ✅ TOGGLE MACRO
+  // TOGGLE MACRO
   void toggleMacro() {
-    isMacroMode.value =
-        !isMacroMode.value;
+    isMacroMode.value = !isMacroMode.value;
   }
 
-  // ✅ CAMERA CAPTURE
-  Future<void>
-      captureFromViewfinder() async {
-    if (cameraController == null ||
-        !cameraController!
-            .value
-            .isInitialized) {
+  // CAMERA CAPTURE
+  Future<void> captureFromViewfinder() async {
+    if (cameraController == null || !cameraController!.value.isInitialized) {
       return;
     }
 
@@ -87,18 +66,14 @@ class ScanController
       isCapturing.value = true;
 
       if (!isFlashOn.value) {
-        await cameraController!
-            .setFlashMode(
+        await cameraController!.setFlashMode(
           FlashMode.off,
         );
       }
 
-      final XFile file =
-          await cameraController!
-              .takePicture();
+      final XFile file = await cameraController!.takePicture();
 
-      final String processedPath =
-          await _processImage(
+      final String processedPath = await _processImage(
         file.path,
       );
 
@@ -117,11 +92,9 @@ class ScanController
     }
   }
 
-  // ✅ PICK FROM GALLERY
-  Future<void>
-      pickFromGallery() async {
-    final XFile? file =
-        await _picker.pickImage(
+  // PICK FROM GALLERY
+  Future<void> pickFromGallery() async {
+    final XFile? file = await _picker.pickImage(
       source: ImageSource.gallery,
     );
 
@@ -129,8 +102,7 @@ class ScanController
       return;
     }
 
-    final String processedPath =
-        await _processImage(
+    final String processedPath = await _processImage(
       file.path,
     );
 
@@ -141,7 +113,7 @@ class ScanController
     await startAnalysis();
   }
 
-  // ✅ PROCESS IMAGE
+  // PROCESS IMAGE
   Future<String> _processImage(
     String path,
   ) async {
@@ -154,38 +126,25 @@ class ScanController
     );
   }
 
-  // ✅ ENHANCE IMAGE
+  // ENHANCE IMAGE
   Future<String> _enhanceImage(
     String path,
   ) async {
-    final bytes =
-        await File(path)
-            .readAsBytes();
+    final bytes = await File(path).readAsBytes();
 
-    final image =
-        img.decodeImage(bytes);
+    final image = img.decodeImage(bytes);
 
     if (image == null) {
       return path;
     }
 
-    final int cropSize =
-        (image.width * 0.6)
-            .toInt();
+    final int cropSize = (image.width * 0.6).toInt();
 
-    final int offsetX =
-        ((image.width - cropSize) /
-                2)
-            .toInt();
+    final int offsetX = ((image.width - cropSize) / 2).toInt();
 
-    final int offsetY =
-        ((image.height -
-                    cropSize) /
-                2)
-            .toInt();
+    final int offsetY = ((image.height - cropSize) / 2).toInt();
 
-    final img.Image cropped =
-        img.copyCrop(
+    final img.Image cropped = img.copyCrop(
       image,
       x: offsetX,
       y: offsetY,
@@ -193,8 +152,7 @@ class ScanController
       height: cropSize,
     );
 
-    final img.Image resized =
-        img.copyResize(
+    final img.Image resized = img.copyResize(
       cropped,
       width: 224,
       height: 224,
@@ -206,8 +164,7 @@ class ScanController
       saturation: 1.1,
     );
 
-    final String newPath =
-        path.replaceAll(
+    final String newPath = path.replaceAll(
       '.jpg',
       '_enhanced.jpg',
     );
@@ -219,19 +176,18 @@ class ScanController
     return newPath;
   }
 
-  // ✅ ADD IMAGE
+  // ADD IMAGE
   void addImage(String path) {
     images.add(path);
   }
 
-  // ✅ REMOVE IMAGE
+  // REMOVE IMAGE
   void removeImage(int index) {
     images.removeAt(index);
   }
 
-  // ✅ START ANALYSIS
-  Future<void> startAnalysis()
-      async {
+  // START ANALYSIS
+  Future<void> startAnalysis() async {
     if (images.isEmpty) {
       return;
     }
@@ -245,27 +201,20 @@ class ScanController
       const Duration(seconds: 3),
     );
 
-    final result =
-        _dummyDetect();
+    final result = _dummyDetect();
 
     Get.offNamed(
       AppRoutes.question,
       arguments: {
-        'diseaseKey':
-            result['key'],
-
-        'confidence':
-            result['confidence'],
-
-        'imagePath':
-            images.first,
+        'diseaseKey': result['key'],
+        'confidence': result['confidence'],
+        'imagePath': images.first,
       },
     );
   }
 
-  // ✅ DUMMY AI DETECT
-  Map<String, dynamic>
-      _dummyDetect() {
+  // DUMMY AI DETECT
+  Map<String, dynamic> _dummyDetect() {
     return {
       'key': 'seborrheic',
       'confidence': 0.91,

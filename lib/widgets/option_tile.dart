@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
 
-class OptionTile
-    extends StatelessWidget {
+class OptionTile extends StatelessWidget {
   final String label;
 
   final int index;
@@ -14,13 +13,9 @@ class OptionTile
 
   const OptionTile({
     super.key,
-
     required this.label,
-
     required this.index,
-
     required this.isSelected,
-
     required this.onTap,
   });
 
@@ -35,103 +30,55 @@ class OptionTile
     BuildContext context,
   ) {
     return Padding(
-      padding:
-          const EdgeInsets.only(
+      padding: const EdgeInsets.only(
         bottom: 10,
       ),
-
       child: GestureDetector(
         onTap: onTap,
-
         child: AnimatedContainer(
-          duration:
-              const Duration(
+          duration: const Duration(
             milliseconds: 180,
           ),
-
           width: double.infinity,
-
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 14,
             vertical: 16,
           ),
-
           decoration: BoxDecoration(
-            color:
-                isSelected
-                    ? AppColors
-                        .accent
-                        .withOpacity(
-                          0.14,
-                        )
-                    : AppColors.s2,
-
-            borderRadius:
-                BorderRadius.circular(
+            color: isSelected
+                ? AppColors.accent.withOpacity(
+                    0.14,
+                  )
+                : AppColors.s2,
+            borderRadius: BorderRadius.circular(
               16,
             ),
-
             border: Border.all(
-              color:
-                  isSelected
-                      ? AppColors
-                          .accent
-                      : AppColors
-                          .border,
-
-              width:
-                  isSelected
-                      ? 1.5
-                      : 1,
+              color: isSelected ? AppColors.accent : AppColors.border,
+              width: isSelected ? 1.5 : 1,
             ),
           ),
-
           child: Row(
             children: [
               /// LETTER BOX
               AnimatedContainer(
-                duration:
-                    const Duration(
-                  milliseconds:
-                      180,
+                duration: const Duration(
+                  milliseconds: 180,
                 ),
-
                 width: 30,
                 height: 30,
-
-                decoration:
-                    BoxDecoration(
-                  color:
-                      isSelected
-                          ? AppColors
-                              .accent
-                          : AppColors
-                              .s3,
-
-                  borderRadius:
-                      BorderRadius
-                          .circular(
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.accent : AppColors.s3,
+                  borderRadius: BorderRadius.circular(
                     10,
                   ),
                 ),
-
                 child: Center(
                   child: Text(
                     _letters[index],
-
                     style: TextStyle(
-                      color:
-                          isSelected
-                              ? Colors
-                                  .black
-                              : AppColors
-                                  .muted,
-
-                      fontWeight:
-                          FontWeight
-                              .bold,
-
+                      color: isSelected ? Colors.black : AppColors.muted,
+                      fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
                   ),
@@ -146,49 +93,25 @@ class OptionTile
               Expanded(
                 child: Text(
                   label,
-
-                  style: AppText
-                      .body
-                      .copyWith(
+                  style: AppText.body.copyWith(
                     fontSize: 13,
-
                     color:
-                        isSelected
-                            ? AppColors
-                                .accent
-                            : AppColors
-                                .textPrimary,
-
+                        isSelected ? AppColors.accent : AppColors.textPrimary,
                     fontWeight:
-                        isSelected
-                            ? FontWeight
-                                .w600
-                            : FontWeight
-                                .normal,
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
               ),
 
               /// CHECK ICON
               AnimatedOpacity(
-                duration:
-                    const Duration(
-                  milliseconds:
-                      180,
+                duration: const Duration(
+                  milliseconds: 180,
                 ),
-
-                opacity:
-                    isSelected
-                        ? 1
-                        : 0,
-
+                opacity: isSelected ? 1 : 0,
                 child: const Icon(
-                  Icons
-                      .check_circle_rounded,
-
-                  color:
-                      AppColors.accent,
-
+                  Icons.check_circle_rounded,
+                  color: AppColors.accent,
                   size: 18,
                 ),
               ),

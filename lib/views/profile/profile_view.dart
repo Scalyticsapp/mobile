@@ -15,53 +15,35 @@ import '../../routes/app_routes.dart';
 import '../../widgets/app_bottom_nav.dart';
 import '../../widgets/background_glow.dart';
 
-class ProfileView
-    extends StatefulWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({
     super.key,
   });
 
   @override
-  State<ProfileView>
-      createState() =>
-          _ProfileViewState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
-class _ProfileViewState
-    extends State<ProfileView> {
-  final DashboardController
-      controller =
-      Get.find<DashboardController>();
+class _ProfileViewState extends State<ProfileView> {
+  final DashboardController controller = Get.find<DashboardController>();
 
-  final AuthController
-    authController =
-    Get.find<AuthController>();
+  final AuthController authController = Get.find<AuthController>();
 
-  final user =
-      Supabase.instance.client.auth.currentUser;
+  final user = Supabase.instance.client.auth.currentUser;
 
-  final bool isGoogleUser =
-      Supabase.instance.client.auth
-              .currentSession
-              ?.user
-              .appMetadata['provider'] ==
-          'google';
+  final bool isGoogleUser = Supabase
+          .instance.client.auth.currentSession?.user.appMetadata['provider'] ==
+      'google';
 
-  late final TextEditingController
-      nameController;
+  late final TextEditingController nameController;
 
-  late final TextEditingController
-      emailController;
+  late final TextEditingController emailController;
 
-  final TextEditingController
-      passwordController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  bool obscurePassword =
-      true;
+  bool obscurePassword = true;
 
-  static const int _tabIndex =
-      3;
+  static const int _tabIndex = 3;
 
   @override
   void initState() {
@@ -69,26 +51,18 @@ class _ProfileViewState
 
     _initializeControllers();
 
+    _syncTab();
   }
 
   void _initializeControllers() {
+    nameController = TextEditingController(
+      text: authController.user['name']?.toString() ?? '',
+    );
 
-    nameController =
-      TextEditingController(
-    text:
-        authController.user['name']
-            ?.toString() ??
-        '',
-  );
-
-  emailController =
-      TextEditingController(
-    text:
-        authController.user['email']
-            ?.toString() ??
-        '',
-  );
-}
+    emailController = TextEditingController(
+      text: authController.user['email']?.toString() ?? '',
+    );
+  }
 
   @override
   void dispose() {
@@ -105,40 +79,29 @@ class _ProfileViewState
   Widget build(
     BuildContext context,
   ) {
-    _syncTab();
-
     return Scaffold(
-      backgroundColor:
-          AppColors.bg,
-
+      backgroundColor: AppColors.bg,
       body: SafeArea(
         child: Column(
-        
           children: [
             /// CONTENT
             Expanded(
               child: Stack(
                 children: [
                   const BackgroundGlow(),
-
                   Center(
-                    child:
-                        SingleChildScrollView(
-                      padding:
-                          const EdgeInsets.all(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(
                         24,
                       ),
-
                       child: Column(
                         children: [
                           const SizedBox(
                             height: 80,
                           ),
-
                           _buildProfileCard(
                             context,
                           ),
-
                           const SizedBox(
                             height: 90,
                           ),
@@ -152,20 +115,14 @@ class _ProfileViewState
 
             /// NAVBAR
             Padding(
-              padding:
-                  const EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 left: 10,
                 right: 10,
                 bottom: 10,
               ),
-
               child: Obx(
                 () => AppBottomNav(
-                  currentIndex:
-                      controller
-                          .selectedTab
-                          .value,
-
+                  currentIndex: controller.selectedTab.value,
                   onTap: (index) {
                     controller.navigateTo(
                       _tabIndex,
@@ -183,11 +140,9 @@ class _ProfileViewState
 
   /// SYNC TAB
   void _syncTab() {
-    WidgetsBinding.instance
-        .addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        controller.selectedTab
-            .value = _tabIndex;
+        controller.selectedTab.value = _tabIndex;
       },
     );
   }
@@ -198,33 +153,24 @@ class _ProfileViewState
   ) {
     return Container(
       width: double.infinity,
-
-      constraints:
-          const BoxConstraints(
+      constraints: const BoxConstraints(
         maxWidth: 420,
       ),
-
-      padding:
-          const EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
         20,
         28,
         20,
         28,
       ),
-
       decoration: BoxDecoration(
         color: AppColors.s1,
-
-        borderRadius:
-            BorderRadius.circular(
+        borderRadius: BorderRadius.circular(
           24,
         ),
-
         border: Border.all(
           color: AppColors.border,
         ),
       ),
-
       child: Column(
         children: [
           /// AVATAR
@@ -237,9 +183,7 @@ class _ProfileViewState
           /// TITLE
           Text(
             'Profil Pengguna',
-
-            style:
-                AppText.headingMd,
+            style: AppText.headingMd,
           ),
 
           const SizedBox(
@@ -249,12 +193,8 @@ class _ProfileViewState
           /// SUBTITLE
           Text(
             'Kelola informasi akun kamu',
-
-            textAlign:
-                TextAlign.center,
-
-            style:
-                AppText.caption.copyWith(
+            textAlign: TextAlign.center,
+            style: AppText.caption.copyWith(
               fontSize: 11,
             ),
           ),
@@ -265,13 +205,9 @@ class _ProfileViewState
 
           /// NAME
           _buildInput(
-            controller:
-                nameController,
-
+            controller: nameController,
             label: 'Nama',
-
-            icon:
-                Icons.person_outline,
+            icon: Icons.person_outline,
           ),
 
           const SizedBox(
@@ -280,14 +216,9 @@ class _ProfileViewState
 
           /// EMAIL
           _buildInput(
-            controller:
-                emailController,
-
+            controller: emailController,
             label: 'Email',
-
-            icon:
-                Icons.mail_outline,
-
+            icon: Icons.mail_outline,
             enabled: false,
           ),
 
@@ -325,40 +256,27 @@ class _ProfileViewState
     return Container(
       width: 90,
       height: 90,
-
-      margin:
-          const EdgeInsets.only(
+      margin: const EdgeInsets.only(
         bottom: 14,
       ),
-
-      decoration:
-          const BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-
-        gradient:
-            LinearGradient(
+        gradient: LinearGradient(
           colors: [
             AppColors.accent,
             AppColors.a2,
           ],
         ),
       ),
-
       child: Center(
         child: Text(
-          authController.user['name'] !=
-        null
-              ? nameController.text[0]
-                  .toUpperCase()
+          authController.user['name'] != null
+              ? nameController.text[0].toUpperCase()
               : 'U',
-
           style: const TextStyle(
             color: AppColors.bg,
-
             fontSize: 32,
-
-            fontWeight:
-                FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -368,68 +286,43 @@ class _ProfileViewState
   /// PASSWORD INPUT
   Widget _buildPasswordInput() {
     return TextField(
-      controller:
-          passwordController,
-
-      obscureText:
-          obscurePassword,
-
+      controller: passwordController,
+      obscureText: obscurePassword,
       style: AppText.body,
-
       decoration: InputDecoration(
         hintText: 'Password',
-
-        hintStyle:
-            AppText.caption,
-
+        hintStyle: AppText.caption,
         prefixIcon: const Icon(
           Icons.lock_outline,
         ),
-
         suffixIcon: IconButton(
           onPressed: () {
             setState(() {
-              obscurePassword =
-                  !obscurePassword;
+              obscurePassword = !obscurePassword;
             });
           },
-
           icon: Icon(
             obscurePassword
-                ? Icons
-                    .visibility_off_outlined
-                : Icons
-                    .visibility_outlined,
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
           ),
         ),
-
-        enabledBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
             12,
           ),
-
           borderSide: BorderSide(
-            color: Colors.white
-                .withOpacity(0.06),
+            color: Colors.white.withOpacity(0.06),
           ),
         ),
-
-        focusedBorder:
-            const OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(
-            color:
-                AppColors.accent,
-
+            color: AppColors.accent,
             width: 1.5,
           ),
         ),
-
-        border:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
             12,
           ),
         ),
@@ -443,42 +336,28 @@ class _ProfileViewState
   ) {
     return SizedBox(
       width: double.infinity,
-
       child: ElevatedButton(
         onPressed: () async {
           await _updateProfile(
             context,
           );
         },
-
-        style:
-            ElevatedButton.styleFrom(
-          backgroundColor:
-              AppColors.accent,
-
-          foregroundColor:
-              Colors.black,
-
-          padding:
-              const EdgeInsets.symmetric(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.accent,
+          foregroundColor: Colors.black,
+          padding: const EdgeInsets.symmetric(
             vertical: 14,
           ),
-
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
               12,
             ),
           ),
         ),
-
         child: const Text(
           'Simpan Perubahan',
-
           style: TextStyle(
-            fontWeight:
-                FontWeight.w700,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -489,62 +368,35 @@ class _ProfileViewState
   Widget _buildLogoutButton() {
     return SizedBox(
       width: double.infinity,
-
       child: OutlinedButton(
         onPressed: () async {
           await AuthService().logout();
-
-          final storage =
-              FlutterSecureStorage();
-
-          final token =
-              await storage.read(
-            key: 'token',
-          );
-
-          print(
-            'TOKEN SETELAH LOGOUT: $token',
-          );
 
           Get.offAllNamed(
             AppRoutes.splash,
           );
         },
-        style:
-            OutlinedButton.styleFrom(
-          minimumSize:
-              const Size.fromHeight(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(
             52,
           ),
-
-          foregroundColor:
-              AppColors.red,
-
+          foregroundColor: AppColors.red,
           side: BorderSide(
-            color: AppColors.red
-                .withOpacity(0.5),
+            color: AppColors.red.withOpacity(0.5),
           ),
-
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             vertical: 14,
           ),
-
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
               12,
             ),
           ),
         ),
-
         child: const Text(
           'Keluar Akun',
-
           style: TextStyle(
-            fontWeight:
-                FontWeight.w700,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -556,135 +408,86 @@ class _ProfileViewState
     BuildContext context,
   ) async {
     try {
-      final storage =
-    FlutterSecureStorage();
+      final storage = FlutterSecureStorage();
 
-final token =
-    await storage.read(
-  key: 'token',
-);
+      final token = await storage.read(
+        key: 'token',
+      );
 
-if (token == null) return;
+      if (token == null) return;
 
-final response =
-    await AuthService()
-        .updateProfile(
-  token,
-  nameController.text.trim(),
-);
+      final response = await AuthService().updateProfile(
+        token,
+        nameController.text.trim(),
+      );
 
-if (response.containsKey(
-  'user',
-)) {
+      if (response.containsKey(
+        'user',
+      )) {
+        authController.user['name'] = nameController.text.trim();
 
-  authController.user['name'] =
-    nameController.text.trim();
-
-    FocusScope.of(context)
-    .unfocus();
-
-} else {
-  Get.snackbar(
-    'Gagal',
-    response['message'] ??
-        'Update gagal',
-
-    snackPosition:
-        SnackPosition.TOP,
-
-    backgroundColor:
-        AppColors.red,
-
-    colorText:
-        Colors.white,
-  );
-}
+        FocusScope.of(context).unfocus();
+      } else {
+        Get.snackbar(
+          'Gagal',
+          response['message'] ?? 'Update gagal',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: AppColors.red,
+          colorText: Colors.white,
+        );
+      }
 
       Get.snackbar(
         'Berhasil',
         'Profil berhasil diperbarui',
-
-        snackPosition:
-            SnackPosition.TOP,
-
-        backgroundColor:
-            AppColors.accent,
-
-        colorText:
-            Colors.black,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: AppColors.accent,
+        colorText: Colors.black,
       );
     } catch (e) {
       Get.snackbar(
         'Gagal',
         'Tidak dapat memperbarui profil',
-
-        snackPosition:
-            SnackPosition.TOP,
-
-        backgroundColor:
-            AppColors.red,
-
-        colorText:
-            Colors.white,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: AppColors.red,
+        colorText: Colors.white,
       );
     }
   }
 
   /// INPUT
   Widget _buildInput({
-    required TextEditingController
-        controller,
-
+    required TextEditingController controller,
     required String label,
-
     required IconData icon,
-
     bool enabled = true,
   }) {
     return TextField(
       controller: controller,
-
       enabled: enabled,
-
       style: AppText.body,
-
       decoration: InputDecoration(
         hintText: label,
-
-        hintStyle:
-            AppText.caption,
-
+        hintStyle: AppText.caption,
         prefixIcon: Icon(
           icon,
         ),
-
-        enabledBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
             12,
           ),
-
           borderSide: BorderSide(
-            color: Colors.white
-                .withOpacity(0.06),
+            color: Colors.white.withOpacity(0.06),
           ),
         ),
-
-        focusedBorder:
-            const OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(
-            color:
-                AppColors.accent,
-
+            color: AppColors.accent,
             width: 1.5,
           ),
         ),
-
-        border:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
             12,
           ),
         ),

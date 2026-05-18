@@ -4,23 +4,18 @@ import '../../core/theme/app_theme.dart';
 
 import '../../widgets/background_glow.dart';
 
-class LoadingView
-    extends StatefulWidget {
+class LoadingView extends StatefulWidget {
   const LoadingView({
     super.key,
   });
 
   @override
-  State<LoadingView>
-      createState() =>
-          _LoadingViewState();
+  State<LoadingView> createState() => _LoadingViewState();
 }
 
-class _LoadingViewState
-    extends State<LoadingView>
+class _LoadingViewState extends State<LoadingView>
     with SingleTickerProviderStateMixin {
-  late AnimationController
-      _controller;
+  late AnimationController _controller;
 
   final List<String> steps = [
     'Gambar diterima',
@@ -43,12 +38,9 @@ class _LoadingViewState
 
   /// INIT ANIMATION
   void _initializeAnimation() {
-    _controller =
-        AnimationController(
+    _controller = AnimationController(
       vsync: this,
-
-      duration:
-          const Duration(
+      duration: const Duration(
         seconds: 2,
       ),
     )..repeat();
@@ -56,9 +48,7 @@ class _LoadingViewState
 
   /// RUN STEP ANIMATION
   Future<void> _runSteps() async {
-    for (int i = 0;
-        i < steps.length;
-        i++) {
+    for (int i = 0; i < steps.length; i++) {
       await Future.delayed(
         const Duration(
           milliseconds: 600,
@@ -85,11 +75,9 @@ class _LoadingViewState
     BuildContext context,
   ) {
     return Scaffold(
-      backgroundColor:
-          const Color(
+      backgroundColor: const Color(
         0xFF080808,
       ),
-
       body: Stack(
         children: [
           /// BACKGROUND GLOW
@@ -97,79 +85,65 @@ class _LoadingViewState
 
           SafeArea(
             child: Padding(
-              padding:
-                  const EdgeInsets.all(
+              padding: const EdgeInsets.all(
                 28,
               ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  /// SPINNER
+                  _buildSpinner(),
 
-            child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment
-                    .center,
+                  const SizedBox(
+                    height: 24,
+                  ),
 
-            children: [
-              /// SPINNER
-              _buildSpinner(),
+                  /// TITLE
+                  _buildTitle(),
 
-              const SizedBox(
-                height: 24,
+                  const SizedBox(
+                    height: 8,
+                  ),
+
+                  /// DESCRIPTION
+                  _buildDescription(),
+
+                  const SizedBox(
+                    height: 40,
+                  ),
+
+                  /// STEP LIST
+                  _buildStepList(),
+                ],
               ),
-
-              /// TITLE
-              _buildTitle(),
-
-              const SizedBox(
-                height: 8,
-              ),
-
-              /// DESCRIPTION
-              _buildDescription(),
-
-              const SizedBox(
-                height: 40,
-              ),
-
-              /// STEP LIST
-              _buildStepList(),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
-    ],
-  ),
-);
-}
+    );
+  }
 
   /// SPINNER
   Widget _buildSpinner() {
     return SizedBox(
       width: 110,
       height: 110,
-
       child: Stack(
-        alignment:
-            Alignment.center,
-
+        alignment: Alignment.center,
         children: [
           RotationTransition(
             turns: _controller,
-
             child: CustomPaint(
               size: const Size(
                 110,
                 110,
               ),
-
-              painter:
-                  _SpinnerPainter(),
+              painter: _SpinnerPainter(),
             ),
           ),
-
           const Icon(
             Icons.auto_awesome_rounded,
-
             size: 38,
-
             color: AppColors.accent,
           ),
         ],
@@ -180,34 +154,20 @@ class _LoadingViewState
   /// TITLE
   Widget _buildTitle() {
     return RichText(
-      textAlign:
-          TextAlign.center,
-
+      textAlign: TextAlign.center,
       text: TextSpan(
-        style:
-            AppText.headingMd,
-
+        style: AppText.headingMd,
         children: const [
           TextSpan(
-            text:
-                'Menganalisis\n',
+            text: 'Menganalisis\n',
           ),
-
           TextSpan(
-            text:
-                'kulit kepalamu',
-
+            text: 'kulit kepalamu',
             style: TextStyle(
-              fontStyle:
-                  FontStyle
-                      .italic,
-
-              color:
-                  AppColors
-                      .accent,
+              fontStyle: FontStyle.italic,
+              color: AppColors.accent,
             ),
           ),
-
           TextSpan(
             text: '…',
           ),
@@ -220,12 +180,8 @@ class _LoadingViewState
   Widget _buildDescription() {
     return Text(
       'Model AI sedang memproses gambar.\nHarap tunggu sebentar.',
-
-      textAlign:
-          TextAlign.center,
-
-      style:
-          AppText.caption.copyWith(
+      textAlign: TextAlign.center,
+      style: AppText.caption.copyWith(
         height: 1.7,
       ),
     );
@@ -237,48 +193,32 @@ class _LoadingViewState
       children: List.generate(
         steps.length,
         (index) {
-          final bool done =
-              index <
-                  currentStep;
+          final bool done = index < currentStep;
 
-          final bool active =
-              index ==
-                  currentStep;
+          final bool active = index == currentStep;
 
           return Padding(
-            padding:
-                const EdgeInsets.only(
+            padding: const EdgeInsets.only(
               bottom: 14,
             ),
-
             child: Row(
               children: [
                 _buildStepIndicator(
                   done,
                   active,
                 ),
-
                 const SizedBox(
                   width: 14,
                 ),
-
                 Text(
                   steps[index],
-
-                  style: AppText
-                      .body
-                      .copyWith(
+                  style: AppText.body.copyWith(
                     fontSize: 13,
-
-                    color:
-                        done
-                            ? AppColors
-                                .muted
-                            : active
-                                ? AppColors
-                                    .accent
-                                : AppColors
-                                    .muted2,
+                    color: done
+                        ? AppColors.muted
+                        : active
+                            ? AppColors.accent
+                            : AppColors.muted2,
                   ),
                 ),
               ],
@@ -295,108 +235,74 @@ class _LoadingViewState
     bool active,
   ) {
     return AnimatedContainer(
-      duration:
-          const Duration(
+      duration: const Duration(
         milliseconds: 300,
       ),
-
       width: 24,
       height: 24,
-
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-
         color: done
             ? AppColors.accent
             : active
-                ? AppColors
-                    .accent
-                    .withOpacity(
-                      0.12,
-                    )
+                ? AppColors.accent.withOpacity(
+                    0.12,
+                  )
                 : AppColors.s3,
-
         border: active
             ? Border.all(
-                color: AppColors
-                    .accent
-                    .withOpacity(
-                      0.4,
-                    ),
+                color: AppColors.accent.withOpacity(
+                  0.4,
+                ),
               )
             : null,
       ),
-
       child: Center(
-        child:
-            done
-                ? const Icon(
-                    Icons
-                        .check_rounded,
-
-                    size: 13,
-
-                    color:
-                        AppColors
-                            .bg,
-                  )
-                : active
-                    ? const _PulsingDot()
-                    : Container(
-                        width: 6,
-                        height: 6,
-
-                        decoration:
-                            const BoxDecoration(
-                          color: AppColors
-                              .muted2,
-
-                          shape: BoxShape
-                              .circle,
-                        ),
-                      ),
+        child: done
+            ? const Icon(
+                Icons.check_rounded,
+                size: 13,
+                color: AppColors.bg,
+              )
+            : active
+                ? const _PulsingDot()
+                : Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(
+                      color: AppColors.muted2,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
       ),
     );
   }
 }
 
 /// SPINNER PAINTER
-class _SpinnerPainter
-    extends CustomPainter {
+class _SpinnerPainter extends CustomPainter {
   @override
   void paint(
     Canvas canvas,
     Size size,
   ) {
-    final Paint bg =
-        Paint()
-          ..color = AppColors
-              .accent
-              .withOpacity(0.08)
-          ..style =
-              PaintingStyle
-                  .stroke
-          ..strokeWidth = 5;
+    final Paint bg = Paint()
+      ..color = AppColors.accent.withOpacity(0.08)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
 
-    final Paint fg =
-        Paint()
-          ..color =
-              AppColors.accent
-          ..style =
-              PaintingStyle
-                  .stroke
-          ..strokeWidth = 5
-          ..strokeCap =
-              StrokeCap.round;
+    final Paint fg = Paint()
+      ..color = AppColors.accent
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
 
-    final Offset center =
-        Offset(
+    final Offset center = Offset(
       size.width / 2,
       size.height / 2,
     );
 
-    final double radius =
-        (size.width - 5) / 2;
+    final double radius = (size.width - 5) / 2;
 
     canvas.drawCircle(
       center,
@@ -409,7 +315,6 @@ class _SpinnerPainter
         center: center,
         radius: radius,
       ),
-
       -1.57,
       1.2,
       false,
@@ -419,47 +324,37 @@ class _SpinnerPainter
 
   @override
   bool shouldRepaint(
-    covariant CustomPainter
-        oldDelegate,
+    covariant CustomPainter oldDelegate,
   ) {
     return false;
   }
 }
 
-class _PulsingDot
-    extends StatefulWidget {
+class _PulsingDot extends StatefulWidget {
   const _PulsingDot();
 
   @override
-  State<_PulsingDot>
-      createState() =>
-          _PulsingDotState();
+  State<_PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState
-    extends State<_PulsingDot>
+class _PulsingDotState extends State<_PulsingDot>
     with SingleTickerProviderStateMixin {
-  late AnimationController
-      _controller;
+  late AnimationController _controller;
 
-  late Animation<double>
-      _animation;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
 
-    _controller =
-        AnimationController(
+    _controller = AnimationController(
       vsync: this,
-
-      duration:
-          const Duration(
+      duration: const Duration(
         milliseconds: 800,
       ),
     )..repeat(
-            reverse: true,
-          );
+        reverse: true,
+      );
 
     _animation = Tween<double>(
       begin: 0.4,
@@ -480,18 +375,12 @@ class _PulsingDotState
   ) {
     return FadeTransition(
       opacity: _animation,
-
       child: Container(
         width: 6,
         height: 6,
-
-        decoration:
-            const BoxDecoration(
-          color:
-              AppColors.accent,
-
-          shape:
-              BoxShape.circle,
+        decoration: const BoxDecoration(
+          color: AppColors.accent,
+          shape: BoxShape.circle,
         ),
       ),
     );

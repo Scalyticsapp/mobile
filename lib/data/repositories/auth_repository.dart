@@ -1,8 +1,7 @@
 import '../services/auth_service.dart';
 
 class AuthRepository {
-  final AuthService _authService =
-      AuthService();
+  final AuthService _authService = AuthService();
 
   // 🔐 LOGIN
   Future<Map<String, dynamic>> login(
